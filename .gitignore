@@ -9,3 +9,4 @@ run.sh
 _probe_page.html
 _probe*.py
 patch_*.py
+run_scan*.py
