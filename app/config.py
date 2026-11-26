@@ -40,12 +40,14 @@ class Rulebook:
                 raise ValueError("Unknown rule kind")
             if rule["deduction"] < 0 or rule["max_deduction"] < 0:
                 raise ValueError("Deductions cannot be negative")
-            if rule.get("count_mode", "per_finding") not in ("per_finding", "once_per_rule"):
+            if rule.get("count_mode", "per_finding") not in ("per_finding", "once_per_rule", "per_file"):
                 raise ValueError("Unknown count mode")
-            if rule.get("report_mode", "per_finding") not in ("per_finding", "summary"):
+            if rule.get("report_mode", "per_finding") not in ("per_finding", "summary", "file_summary"):
                 raise ValueError("Unknown report mode")
             if rule.get("report_mode") == "summary" and rule["kind"] != "path":
                 raise ValueError("Summary report mode is only valid for path rules")
+            if rule.get("report_mode") == "file_summary" and rule["kind"] != "content":
+                raise ValueError("File summary report mode is only valid for content rules")
             if rule["dimension"] == "secrets" and rule.get("count_mode") != "once_per_rule":
                 raise ValueError("Secret rules must count once per rule")
             for check, state in rule.get("when", {}).items():

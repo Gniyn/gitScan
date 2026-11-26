@@ -30,6 +30,7 @@ class Finding(BaseModel):
     applied_deduction: int = 0
     deduction_reason: str = ""
     related_finding_id: Optional[str] = None
+    hit_count: int = 1
     recommendation: str
     source_url: Optional[str] = None
 

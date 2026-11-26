@@ -1,0 +1,1318 @@
+{
+  "id": "3544eaf2b5d54a76b85f22829e7710f5",
+  "status": "complete",
+  "progress": "完成",
+  "report": {
+    "schema_version": "1.0.0",
+    "scan_id": "3544eaf2b5d54a76b85f22829e7710f5",
+    "repository": {
+      "owner": "cmderdev",
+      "name": "cmder",
+      "full_name": "cmderdev/cmder",
+      "url": "https://github.com/cmderdev/cmder"
+    },
+    "commit_sha": "5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2",
+    "engine_version": "1.0.0",
+    "rules_digest": "b73cd5ecfc51a4b9d518ac3b7a6754538f739c024102b6a3eb1e992f09ee2f70",
+    "status": "complete",
+    "score": 59,
+    "score_kind": "full",
+    "dimensions": {
+      "readiness": {
+        "label": "接入完整性",
+        "maximum": 35,
+        "deduction": 25,
+        "score": 10
+      },
+      "windows": {
+        "label": "Windows 依赖",
+        "maximum": 15,
+        "deduction": 10,
+        "score": 5
+      },
+      "paths": {
+        "label": "硬编码路径",
+        "maximum": 20,
+        "deduction": 6,
+        "score": 14
+      },
+      "secrets": {
+        "label": "密钥与敏感文件",
+        "maximum": 30,
+        "deduction": 0,
+        "score": 30
+      }
+    },
+    "checks": {
+      "readme": {
+        "label": "README",
+        "state": "present",
+        "evidence_paths": [
+          "README.md"
+        ],
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ]
+      },
+      "dependencies": {
+        "label": "依赖清单",
+        "state": "absent",
+        "evidence_paths": [],
+        "checked_patterns": [
+          "pyproject.toml",
+          "requirements*.txt",
+          "Pipfile",
+          "setup.py",
+          "setup.cfg",
+          "environment.yml",
+          "package.json",
+          "Cargo.toml",
+          "go.mod",
+          "pom.xml",
+          "build.gradle",
+          "*.csproj",
+          "Gemfile",
+          "composer.json",
+          "*/pyproject.toml",
+          "*/requirements*.txt",
+          "*/Pipfile",
+          "*/package.json",
+          "*/Cargo.toml",
+          "*/go.mod",
+          "*/pom.xml",
+          "*/build.gradle",
+          "*/*.csproj",
+          "*/Gemfile",
+          "*/composer.json"
+        ]
+      },
+      "startup": {
+        "label": "可识别启动入口",
+        "state": "absent",
+        "evidence_paths": [],
+        "checked_patterns": [
+          "start.*",
+          "run.*",
+          "main.py",
+          "app.py",
+          "manage.py",
+          "__main__.py",
+          "*/__main__.py",
+          "scripts/start.*",
+          "scripts/run.*",
+          "Dockerfile",
+          "Makefile",
+          "compose.yml",
+          "docker-compose.yml",
+          "package.json"
+        ]
+      },
+      "startup_docs": {
+        "label": "README 启动说明",
+        "state": "absent",
+        "evidence_paths": [],
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ]
+      },
+      "windows_entry": {
+        "label": "Windows 启动方式",
+        "state": "present",
+        "evidence_paths": [
+          "README.md"
+        ],
+        "checked_patterns": [
+          "start.bat",
+          "start.cmd",
+          "start.ps1",
+          "start.vbs",
+          "run.bat",
+          "run.cmd",
+          "run.ps1",
+          "run.vbs",
+          "scripts/start.bat",
+          "scripts/start.cmd",
+          "scripts/start.ps1",
+          "scripts/run.bat",
+          "scripts/run.cmd",
+          "scripts/run.ps1",
+          "package.json",
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ]
+      },
+      "portable_entry": {
+        "label": "可识别跨平台启动方式",
+        "state": "absent",
+        "evidence_paths": [],
+        "checked_patterns": [
+          "start.sh",
+          "run.sh",
+          "main.py",
+          "app.py",
+          "manage.py",
+          "__main__.py",
+          "*/__main__.py",
+          "scripts/start.sh",
+          "scripts/run.sh",
+          "Dockerfile",
+          "Makefile",
+          "compose.yml",
+          "docker-compose.yml",
+          "package.json"
+        ]
+      },
+      "windows_docs": {
+        "label": "Windows 文档命令",
+        "state": "present",
+        "evidence_paths": [
+          "README.md"
+        ],
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ]
+      },
+      "portable_docs": {
+        "label": "跨平台文档命令",
+        "state": "present",
+        "evidence_paths": [
+          "README.md"
+        ],
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ]
+      }
+    },
+    "findings": [
+      {
+        "id": "5cc90c43ce1d90b4c213cb09",
+        "rule_id": "R002",
+        "rule_version": "1.0.0",
+        "dimension": "readiness",
+        "severity": "medium",
+        "confidence": "medium",
+        "title": "缺少可识别依赖清单",
+        "message": "未发现规则支持的依赖清单；无外部依赖的项目可人工确认。",
+        "location": null,
+        "evidence": "检查候选：pyproject.toml, requirements*.txt, Pipfile, setup.py, setup.cfg, environment.yml, package.json, Cargo.toml, go.mod, pom.xml, build.gradle, *.csproj, Gemfile, composer.json, */",
+        "proposed_deduction": 10,
+        "applied_deduction": 10,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 1,
+        "recommendation": "提供依赖清单或明确说明无需安装依赖。",
+        "source_url": null
+      },
+      {
+        "id": "73e42040a640ef2fc328e1e8",
+        "rule_id": "R003",
+        "rule_version": "1.0.0",
+        "dimension": "readiness",
+        "severity": "medium",
+        "confidence": "medium",
+        "title": "缺少可识别启动入口",
+        "message": "未发现规则支持的启动入口；纯库项目可能不需要独立入口。",
+        "location": null,
+        "evidence": "检查候选：start.*, run.*, main.py, app.py, manage.py, __main__.py, */__main__.py, scripts/start.*, scripts/run.*, Dockerfile, Makefile, compose.yml, docker-compose.yml, package.json",
+        "proposed_deduction": 10,
+        "applied_deduction": 10,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 1,
+        "recommendation": "增加可复现入口，或说明库的最小使用示例。",
+        "source_url": null
+      },
+      {
+        "id": "0ca972f399781a55c412a402",
+        "rule_id": "R004",
+        "rule_version": "1.0.0",
+        "dimension": "readiness",
+        "severity": "low",
+        "confidence": "medium",
+        "title": "README 缺少可识别启动说明",
+        "message": "已扫描 README 未发现可识别启动说明。",
+        "location": {
+          "path": "README.md",
+          "line_start": null,
+          "column_start": null,
+          "line_end": null,
+          "column_end": null
+        },
+        "evidence": "证据文件：README.md",
+        "proposed_deduction": 5,
+        "applied_deduction": 5,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 1,
+        "recommendation": "写明安装、配置及最小启动命令。",
+        "source_url": "https://github.com/cmderdev/cmder/blob/5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2/README.md"
+      },
+      {
+        "id": "d6e59fb06e915259992f8e7e",
+        "rule_id": "W001",
+        "rule_version": "1.0.0",
+        "dimension": "windows",
+        "severity": "medium",
+        "confidence": "medium",
+        "title": "仅发现 Windows 启动方式",
+        "message": "已发现 Windows 启动证据，未发现规则支持的跨平台替代方式。",
+        "location": {
+          "path": "README.md",
+          "line_start": null,
+          "column_start": null,
+          "line_end": null,
+          "column_end": null
+        },
+        "evidence": "证据文件：README.md",
+        "proposed_deduction": 10,
+        "applied_deduction": 10,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 1,
+        "recommendation": "提供 Python/Node 入口、Shell 脚本或容器启动方式。",
+        "source_url": "https://github.com/cmderdev/cmder/blob/5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2/README.md"
+      },
+      {
+        "id": "ea1d5c90981f6437343cb3fe",
+        "rule_id": "W003",
+        "rule_version": "1.0.0",
+        "dimension": "windows",
+        "severity": "info",
+        "confidence": "high",
+        "title": "Windows 脚本",
+        "message": "文件清单中存在 Windows 脚本；存在本身不扣分，也不代表恶意。",
+        "location": {
+          "path": "Cmder.bat",
+          "line_start": null,
+          "column_start": null,
+          "line_end": null,
+          "column_end": null
+        },
+        "evidence": "仓库文件清单：Cmder.bat, scripts/build.ps1, scripts/check-trailing-whitespace.ps1, scripts/pack.ps1, scripts/test-build-helpers.ps1, scripts/test-git-layout.ps1, scripts/test-shell-detect",
+        "proposed_deduction": 0,
+        "applied_deduction": 0,
+        "deduction_reason": "仅提示，不扣分",
+        "related_finding_id": null,
+        "hit_count": 1,
+        "recommendation": "接入前人工审阅，不在体检服务中执行。",
+        "source_url": "https://github.com/cmderdev/cmder/blob/5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2/Cmder.bat"
+      },
+      {
+        "id": "14ad5c0b6669527e4a93df50",
+        "rule_id": "P001",
+        "rule_version": "1.0.0",
+        "dimension": "paths",
+        "severity": "medium",
+        "confidence": "medium",
+        "title": "硬编码本机绝对路径",
+        "message": "路径依赖具体机器或用户目录，示例路径也需人工确认。（本文件命中 6 处，行 537、584、702、836、1117、1326）",
+        "location": {
+          "path": "CHANGELOG.md",
+          "line_start": 537,
+          "column_start": 63,
+          "line_end": 537,
+          "column_end": 68
+        },
+        "evidence": "  * Call library methods by typing `\"%lib_path% enhance_path \"c:\\bin\"`.",
+        "proposed_deduction": 3,
+        "applied_deduction": 3,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 6,
+        "recommendation": "使用相对路径、配置项或平台路径 API。",
+        "source_url": "https://github.com/cmderdev/cmder/blob/5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2/CHANGELOG.md#L537"
+      },
+      {
+        "id": "3bd7799d8b768789cfea274b",
+        "rule_id": "P001",
+        "rule_version": "1.0.0",
+        "dimension": "paths",
+        "severity": "medium",
+        "confidence": "medium",
+        "title": "硬编码本机绝对路径",
+        "message": "路径依赖具体机器或用户目录，示例路径也需人工确认。（本文件命中 4 处，行 19、35、315、323）",
+        "location": {
+          "path": "README.md",
+          "line_start": 19,
+          "column_start": 57,
+          "line_end": 19,
+          "column_end": 66
+        },
+        "evidence": "2. Extract the archive. *Note: This path should not be `C:\\Program Files` or anywhere else that would require Administrator access for modifying configuration files*",
+        "proposed_deduction": 3,
+        "applied_deduction": 3,
+        "deduction_reason": "按规则扣分",
+        "related_finding_id": null,
+        "hit_count": 4,
+        "recommendation": "使用相对路径、配置项或平台路径 API。",
+        "source_url": "https://github.com/cmderdev/cmder/blob/5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2/README.md#L19"
+      }
+    ],
+    "deductions": [
+      {
+        "finding_id": "5cc90c43ce1d90b4c213cb09",
+        "rule_id": "R002",
+        "points": 10
+      },
+      {
+        "finding_id": "73e42040a640ef2fc328e1e8",
+        "rule_id": "R003",
+        "points": 10
+      },
+      {
+        "finding_id": "0ca972f399781a55c412a402",
+        "rule_id": "R004",
+        "points": 5
+      },
+      {
+        "finding_id": "d6e59fb06e915259992f8e7e",
+        "rule_id": "W001",
+        "points": 10
+      },
+      {
+        "finding_id": "14ad5c0b6669527e4a93df50",
+        "rule_id": "P001",
+        "points": 3
+      },
+      {
+        "finding_id": "3bd7799d8b768789cfea274b",
+        "rule_id": "P001",
+        "points": 3
+      }
+    ],
+    "coverage": {
+      "total_files": 126,
+      "selected_files": 126,
+      "scanned_files": 51,
+      "content_skipped_files": 9,
+      "excluded_by_file_budget": 0,
+      "binary_files": 36,
+      "ignored_files": 39,
+      "unsupported_encoding_files": 0,
+      "truncated_files": 0,
+      "other_archive_members": 18,
+      "compressed_bytes": 238620,
+      "expanded_bytes": 972800,
+      "scanned_bytes": 403552,
+      "limits": {
+        "max_files": 2000,
+        "max_file_bytes": 262144
+      },
+      "files": [
+        {
+          "path": ".git-blame-ignore-revs",
+          "original_bytes": 682,
+          "scanned_bytes": 682,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".gitattributes",
+          "original_bytes": 160,
+          "scanned_bytes": 160,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/bug-report.yml",
+          "original_bytes": 7976,
+          "scanned_bytes": 7976,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/config.yml",
+          "original_bytes": 421,
+          "scanned_bytes": 421,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/feature-request.yml",
+          "original_bytes": 3664,
+          "scanned_bytes": 3664,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/question.yml",
+          "original_bytes": 2158,
+          "scanned_bytes": 2158,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "original_bytes": 5637,
+          "scanned_bytes": 5637,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/dependabot.yml",
+          "original_bytes": 658,
+          "scanned_bytes": 658,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/stale.yml",
+          "original_bytes": 854,
+          "scanned_bytes": 854,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/workflows/build.yml",
+          "original_bytes": 13263,
+          "scanned_bytes": 13263,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "original_bytes": 5664,
+          "scanned_bytes": 5664,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/workflows/tests.yml",
+          "original_bytes": 12600,
+          "scanned_bytes": 12600,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".github/workflows/vendor.yml",
+          "original_bytes": 35497,
+          "scanned_bytes": 35497,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": ".gitignore",
+          "original_bytes": 517,
+          "scanned_bytes": 517,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "AGENTS.md",
+          "original_bytes": 208,
+          "scanned_bytes": 208,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "CHANGELOG.md",
+          "original_bytes": 108031,
+          "scanned_bytes": 108031,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "original_bytes": 11407,
+          "scanned_bytes": 11407,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "Cmder.bat",
+          "original_bytes": 2987,
+          "scanned_bytes": 2987,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "LICENSE",
+          "original_bytes": 1069,
+          "scanned_bytes": 1069,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "README.md",
+          "original_bytes": 27828,
+          "scanned_bytes": 27828,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "SECURITY.md",
+          "original_bytes": 1054,
+          "scanned_bytes": 1054,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "bin/Readme.md",
+          "original_bytes": 84,
+          "scanned_bytes": 84,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "config/Readme.md",
+          "original_bytes": 886,
+          "scanned_bytes": 886,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "config/profile.d/README.md",
+          "original_bytes": 135,
+          "scanned_bytes": 135,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "docs/UPGRADING-2.0.md",
+          "original_bytes": 6092,
+          "scanned_bytes": 6092,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "icons/cmder.ico",
+          "original_bytes": 18089,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_blue.ico",
+          "original_bytes": 5272,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_green.ico",
+          "original_bytes": 5193,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_icon.psd",
+          "original_bytes": 171807,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_orange.ico",
+          "original_bytes": 5383,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_purple.ico",
+          "original_bytes": 5317,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_red.ico",
+          "original_bytes": 4898,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/cmder_yellow.ico",
+          "original_bytes": 5227,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16.png",
+          "original_bytes": 1158,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_blue.png",
+          "original_bytes": 256,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_green.png",
+          "original_bytes": 264,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_orange.png",
+          "original_bytes": 256,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_purple.png",
+          "original_bytes": 271,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_red.png",
+          "original_bytes": 257,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_16_yellow.png",
+          "original_bytes": 264,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256.png",
+          "original_bytes": 3455,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_blue.png",
+          "original_bytes": 1964,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_green.png",
+          "original_bytes": 1917,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_orange.png",
+          "original_bytes": 1933,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_purple.png",
+          "original_bytes": 1961,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_red.png",
+          "original_bytes": 1922,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_256_yellow.png",
+          "original_bytes": 1918,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32.png",
+          "original_bytes": 1297,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_blue.png",
+          "original_bytes": 371,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_green.png",
+          "original_bytes": 369,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_orange.png",
+          "original_bytes": 364,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_purple.png",
+          "original_bytes": 392,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_red.png",
+          "original_bytes": 378,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_32_yellow.png",
+          "original_bytes": 372,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48.png",
+          "original_bytes": 1440,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_blue.png",
+          "original_bytes": 514,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_green.png",
+          "original_bytes": 498,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_orange.png",
+          "original_bytes": 499,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_purple.png",
+          "original_bytes": 521,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_red.png",
+          "original_bytes": 501,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "icons/icon_48_yellow.png",
+          "original_bytes": 493,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "binary"
+        },
+        {
+          "path": "launcher/.gitignore",
+          "original_bytes": 2628,
+          "scanned_bytes": 2628,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/CmderLauncher.sln",
+          "original_bytes": 1292,
+          "scanned_bytes": 1292,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/CmderLauncher.vcxproj",
+          "original_bytes": 9125,
+          "scanned_bytes": 9125,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/CmderLauncher.cpp",
+          "original_bytes": 36621,
+          "scanned_bytes": 36621,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/app.manifest",
+          "original_bytes": 1684,
+          "scanned_bytes": 1684,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/resource.h",
+          "original_bytes": 522,
+          "scanned_bytes": 522,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/resource.rc",
+          "original_bytes": 3104,
+          "scanned_bytes": 3104,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/strings.rc2",
+          "original_bytes": 653,
+          "scanned_bytes": 653,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/src/version.rc2.sample",
+          "original_bytes": 1132,
+          "scanned_bytes": 1132,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/tests/.gitignore",
+          "original_bytes": 12,
+          "scanned_bytes": 12,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/tests/CmderLauncherTests.cpp",
+          "original_bytes": 13473,
+          "scanned_bytes": 13473,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "launcher/tests/CmderLauncherTests.vcxproj",
+          "original_bytes": 1732,
+          "scanned_bytes": 1732,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "opt/Readme.md",
+          "original_bytes": 270,
+          "scanned_bytes": 270,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "packignore",
+          "original_bytes": 378,
+          "scanned_bytes": 378,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/README.md",
+          "original_bytes": 2851,
+          "scanned_bytes": 2851,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/build.ps1",
+          "original_bytes": 8938,
+          "scanned_bytes": 8938,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/check-trailing-whitespace.ps1",
+          "original_bytes": 1090,
+          "scanned_bytes": 1090,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/pack.ps1",
+          "original_bytes": 4362,
+          "scanned_bytes": 4362,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/package-profiles.json",
+          "original_bytes": 1961,
+          "scanned_bytes": 1961,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/test-build-helpers.ps1",
+          "original_bytes": 7553,
+          "scanned_bytes": 7553,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/test-git-layout.ps1",
+          "original_bytes": 9264,
+          "scanned_bytes": 9264,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/test-shell-detection.ps1",
+          "original_bytes": 3346,
+          "scanned_bytes": 3346,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/test-update.ps1",
+          "original_bytes": 2151,
+          "scanned_bytes": 2151,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/test-vendor-badges.ps1",
+          "original_bytes": 8220,
+          "scanned_bytes": 8220,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/update.ps1",
+          "original_bytes": 11552,
+          "scanned_bytes": 11552,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "scripts/utils.ps1",
+          "original_bytes": 20106,
+          "scanned_bytes": 20106,
+          "truncated": false,
+          "skip_reason": null
+        },
+        {
+          "path": "vendor/ConEmu.xml.default",
+          "original_bytes": 56720,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/Readme.md",
+          "original_bytes": 49,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/alias.cmd",
+          "original_bytes": 4203,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/cexec.cmd",
+          "original_bytes": 3836,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/cmder_diag.cmd",
+          "original_bytes": 1735,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/cmder_diag.ps1",
+          "original_bytes": 2252,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/cmder_diag.sh",
+          "original_bytes": 1534,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/cmder_shell.cmd",
+          "original_bytes": 296,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/create-cmdercfg.cmd",
+          "original_bytes": 153,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/create-cmdercfg.ps1",
+          "original_bytes": 937,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/excd.cmd",
+          "original_bytes": 234,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/timer.cmd",
+          "original_bytes": 1138,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/vscode_init.cmd",
+          "original_bytes": 749,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/bin/vscode_init_args.cmd.default",
+          "original_bytes": 1156,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/clink.lua",
+          "original_bytes": 26724,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/clink_settings.default",
+          "original_bytes": 861,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/cmder.sh",
+          "original_bytes": 3722,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/cmder_exinit",
+          "original_bytes": 3820,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/cmder_prompt_config.lua.default",
+          "original_bytes": 2144,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/git-prompt.sh",
+          "original_bytes": 4085,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/init.bat",
+          "original_bytes": 346,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/init.cmd",
+          "original_bytes": 20429,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/lib_base.cmd",
+          "original_bytes": 3755,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/lib_console.cmd",
+          "original_bytes": 2664,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/lib_git.cmd",
+          "original_bytes": 9542,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/lib_path.cmd",
+          "original_bytes": 9295,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/lib_profile.cmd",
+          "original_bytes": 1038,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/lib/start-ssh-agent.sh",
+          "original_bytes": 580,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/profile.ps1",
+          "original_bytes": 12471,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/psmodules/Cmder.ps1",
+          "original_bytes": 10106,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/sources.json",
+          "original_bytes": 867,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/start_git_bash.cmd",
+          "original_bytes": 2005,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/start_git_mintty.cmd",
+          "original_bytes": 1649,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/user_aliases.cmd.default",
+          "original_bytes": 666,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/user_init.cmd.template",
+          "original_bytes": 5177,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/user_profile.cmd.default",
+          "original_bytes": 721,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/user_profile.ps1.default",
+          "original_bytes": 861,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/user_profile.sh.default",
+          "original_bytes": 295,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        },
+        {
+          "path": "vendor/windows_terminal_default_settings.json",
+          "original_bytes": 11290,
+          "scanned_bytes": 0,
+          "truncated": false,
+          "skip_reason": "ignored"
+        }
+      ]
+    },
+    "limitations": [
+      "已跳过 9 个测试样本文件，其内容未参与密钥与路径检测（如 .git-blame-ignore-revs, launcher/tests/.gitignore, launcher/tests/CmderLauncherTests.cpp 等）。",
+      "仅检查当前 commit，不检查 Git 历史、不验证凭证有效性、不执行仓库内容。"
+    ],
+    "advice": null
+  },
+  "advice": {
+    "model": "deepseek-chat",
+    "content": "## 一、优先整改项\n\n1. **补齐依赖与启动说明（接入完整性 10/35，扣 25）**\n   - 未发现规则支持的依赖清单（R002，扣 10）：在仓库根目录补充依赖清单，或在 README 明确声明“无需安装外部依赖”。\n   - 未发现可识别启动入口（R003，扣 10）：补充可复现的最小启动入口，或说明本项目为库/工具类项目的最小使用示例。\n   - README 缺少可识别启动说明（R004，扣 5）：在 README.md 写明安装、配置及最小启动命令。\n\n2. **补充跨平台启动方式（Windows 依赖 5/15，扣 10）**\n   - 目前仅发现 Windows 启动证据（W001）。建议提供 Shell 脚本、容器启动方式或其他跨平台入口，并在 README 同步说明。\n\n3. **清理硬编码本机绝对路径（硬编码路径 14/20，扣 6）**\n   - CHANGELOG.md 命中 6 处（行 537、584、702、836、1117、1326）。\n   - README.md 命中 4 处（行 19、35、315、323）。\n   - 建议改为相对路径、配置项或平台路径 API；文档中的示例路径需人工确认是否可脱敏。\n\n4. **密钥与敏感文件（30/30，无扣分）**：当前未发现命中，保持现状即可。\n\n## 二、接入步骤\n\n1. 在根目录新增依赖清单，或在 README 增加“依赖说明”章节。\n2. 在 README 增加“快速开始”章节：安装 → 配置 → 启动命令。\n3. 增加跨平台启动脚本（如 Shell 脚本或容器方式），并在 README 给出对应命令。\n4. 逐条替换 CHANGELOG.md 与 README.md 中的本机绝对路径为相对路径或占位符。\n5. 重新提交后复跑体检，确认各维度得分变化。\n\n## 三、需人工确认项\n\n- 本项目是否确实无需外部依赖（R002 提示可人工确认）。\n- 是否为纯库/工具项目、是否本就不需要独立启动入口（R003 提示）。\n- README.md 与 CHANGELOG.md 中的绝对路径是否仅为示例、是否涉及真实用户目录，需确认后再脱敏。\n- 体检跳过了 9 个测试样本文件（如 launcher/tests/CmderLauncherTests.cpp 等），其内容未参与密钥与路径检测，需人工抽查。\n- 仅检查当前 commit，未检查 Git 历史，历史中是否含敏感信息需另行确认。",
+    "notice": "AI 建议不参与评分，请结合人工复核。"
+  },
+  "advice_error": null,
+  "error": null
+}

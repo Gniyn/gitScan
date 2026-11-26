@@ -141,7 +141,10 @@ class GitHubReader:
                 if attempt < self.policy["github_retries"] and wait <= self.policy["max_rate_wait_seconds"]:
                     time.sleep(wait)
                     continue
-                raise GitHubError("GitHub 限流，请稍后重试或由管理员配置只读 token")
+                reset = response.headers.get("x-ratelimit-reset")
+                remaining_minutes = max(1, (int(reset) - int(time.time())) // 60) if reset and reset.isdigit() else None
+                hint = "（匿名配额每小时 60 次，约 %s 分钟后重置）" % remaining_minutes if remaining_minutes else ""
+                raise GitHubError("GitHub 限流，请稍后重试或由管理员配置只读 token" + hint)
             if response.status_code >= 500 and attempt < self.policy["github_retries"]:
                 time.sleep(2 ** attempt)
                 continue
@@ -183,7 +186,10 @@ class GitHubReader:
                         attempt += 1
                         time.sleep(wait)
                         continue
-                    raise GitHubError("GitHub 限流，请稍后重试或由管理员配置只读 token")
+                    reset = response.headers.get("x-ratelimit-reset")
+                    remaining_minutes = max(1, (int(reset) - int(time.time())) // 60) if reset and reset.isdigit() else None
+                    hint = "（匿名配额每小时 60 次，约 %s 分钟后重置）" % remaining_minutes if remaining_minutes else ""
+                    raise GitHubError("GitHub 限流，请稍后重试或由管理员配置只读 token" + hint)
                 if response.status_code >= 500:
                     if attempt < self.policy["github_retries"]:
                         attempt += 1

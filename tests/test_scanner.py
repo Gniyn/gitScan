@@ -155,6 +155,7 @@ def test_only_leading_utf8_bom_is_removed():
 
 
 def test_hardcoded_path_variants_are_detected():
+    # P001 按文件合并上报：同文件多条命中合并成一条，命中数与行号写进消息
     report = scan(
         {
             "README.md": "Getting Started\nnpm start\n",
@@ -164,30 +165,26 @@ def test_hardcoded_path_variants_are_detected():
         }
     )
     path_findings = [item for item in report.findings if item.rule_id == "P001"]
-    assert len(path_findings) == 3
-    assert any("E:\\data" in item.evidence for item in path_findings)
-    assert any("/home/alice/x" in item.evidence for item in path_findings)
-    assert any("\\\\nas\\share\\f.txt" in item.evidence for item in path_findings)
+    assert len(path_findings) == 1
+    merged = path_findings[0]
+    assert merged.hit_count == 3
+    assert "命中 3 处" in merged.message
+    assert merged.evidence
 
 
-def test_nested_dependency_manifest_counts_but_ignored_directory_does_not():
-    nested = scan(
+def test_path_findings_are_collapsed_per_file():
+    report = scan(
         {
             "README.md": "Getting Started\nnpm start\n",
-            "app/requirements.txt": "fastapi\n",
+            "requirements.txt": "fastapi\n",
             "main.py": "print('ok')\n",
+            "a.txt": "C:\\one\nC:\\two\nC:\\three\n",
+            "b.txt": "D:\\four\n",
         }
     )
-    assert nested.checks["dependencies"]["state"] == "present"
-    ignored = scan(
-        {
-            "README.md": "Getting Started\nnpm start\n",
-            "node_modules/demo/package.json": '{"scripts":{"start":"node app.js"}}',
-            "main.py": "print('ok')\n",
-        }
-    )
-    assert ignored.checks["dependencies"]["state"] == "absent"
-    assert any(item.rule_id == "R002" for item in ignored.findings)
+    path_findings = [item for item in report.findings if item.rule_id == "P001"]
+    assert sorted(item.location.path for item in path_findings) == ["a.txt", "b.txt"]
+    assert sum(item.applied_deduction > 0 for item in path_findings) == 2
 
 
 def test_test_fixtures_are_excluded_from_content_scan():

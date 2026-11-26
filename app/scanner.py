@@ -281,6 +281,9 @@ def scan_snapshot(snapshot, rulebook, repository, commit_sha, scan_id):
                     append(make_finding(rule, rulebook, repository, commit_sha, path=path, evidence="仓库文件清单：" + path))
         else:
             targets, _ = content_scan_targets(snapshot, rulebook, rule)
+            per_file = rule.get("report_mode") == "file_summary"
+            merged = {}
+            collapsed_lines = {}
             for record in targets:
                 for match in rulebook.patterns[rule["id"]].finditer(record.text):
                     if rule.get("redact") and rulebook.placeholder.search(match.group()):
@@ -297,7 +300,24 @@ def scan_snapshot(snapshot, rulebook, repository, commit_sha, scan_id):
                         line_start = record.text.rfind("\n", 0, match.start()) + 1
                         line_end = record.text.find("\n", match.end())
                         evidence = record.text[line_start:line_end if line_end >= 0 else len(record.text)]
-                    append(make_finding(rule, rulebook, repository, commit_sha, record.path, record.text, match.start(), match.end(), evidence))
+                    finding = make_finding(rule, rulebook, repository, commit_sha, record.path, record.text, match.start(), match.end(), evidence)
+                    if per_file:
+                        # 同一文件同一规则只上报一条，命中条数与行号合并进消息，避免同一条问题刷屏
+                        entry = merged.get(record.path)
+                        if entry is None:
+                            entry = merged[record.path] = finding
+                            entry.hit_count = 0
+                        entry.hit_count += 1
+                        line_starts = collapsed_lines.setdefault(record.path, [])
+                        if finding.location and finding.location.line_start:
+                            line_starts.append(finding.location.line_start)
+                    else:
+                        append(finding)
+            for entry in merged.values():
+                lines = "、".join(str(line) for line in collapsed_lines.get(entry.location.path, []))
+                entry.message = "%s（本文件命中 %s 处%s）" % (
+                    entry.message, entry.hit_count, "，行 %s" % lines if lines else "")
+                append(entry)
     score, dimensions, deductions = score_findings(findings, rulebook)
     excluded = len(snapshot.paths) - len(snapshot.files)
     truncated = [record for record in snapshot.files if record.truncated]

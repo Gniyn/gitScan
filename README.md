@@ -102,11 +102,18 @@ AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责�
 - tarball 下载或解包失败：不覆盖旧报告，仅记录失败事件；连续失败达阈值才提示仓库不可达。
 - 结果是幂等的：同一 commit 重扫得到相同分数，所以重试不会产生抖动的报告。
 
+**目前已实现的部分（其余按设计保留，未实现）**
+
+- 同仓库短时间重复提交：`refresh_ttl_seconds`（默认 300 秒）内的第二次及以后请求直接复用上一份结果，接口返回 `reused: true` 与 `cached_commit`。
+- 同一仓库正在扫描时并发提交：并入进行中的任务（`merged_into` 指向源任务），不重复消耗 GitHub 配额。
+- 结果缓存：`cache_ttl_seconds`（1800 秒）+ `cache_capacity`，只缓存已完成的报告。
+- 限流提示：匿名配额耗尽时错误信息会带上「匿名配额每小时 60 次，约 N 分钟后重置」，而不是笼统的失败。
+
 ## 界面
 
-![扫描结果页](docs/screenshots/report.png)
+![扫描结果页](docs/screenshots/cmder.png)
 
-真实截图（`pallets/flask` @ `09493b5`，75 分）：左侧是接入评分与四项检查，右侧是各维度得分与扫描覆盖，下方风险清单可按"参与扣分 / Windows / 路径 / 密钥"筛选，底部是为该报告实时生成的 AI 接入建议。所有数字都来自这次扫描，没有手工修饰。
+真实截图（`cmderdev/cmder` @ `5655c5e`，59 分）：左侧是接入评分与四项检查，右侧是各维度得分与扫描覆盖，下方风险清单可按"参与扣分 / Windows / 路径 / 密钥"筛选，底部是为该报告实时生成的 AI 接入建议。所有数字都来自这次扫描，没有手工修饰。
 
 ## 已知边界
 
@@ -117,8 +124,8 @@ AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责�
 
 ## 样例报告
 
-[`docs/samples/gitscan-self.json`](docs/samples/gitscan-self.json) 是本项目自扫结果（77 分），[`docs/samples/hello-world.json`](docs/samples/hello-world.json) 是 `octocat/Hello-World`（75 分）。两份都是真实拉取的真实报告，可直接对照 `limitations` 与 `coverage` 查看工具在哪些地方"没看到"。
+[`docs/samples/gitscan-self.json`](docs/samples/gitscan-self.json) 是本项目自扫结果（77 分），[`docs/samples/hello-world.json`](docs/samples/hello-world.json) 是 `octocat/Hello-World`（75 分），[`docs/samples/cmder.json`](docs/samples/cmder.json) 是 `cmderdev/cmder`（59 分，含 Windows 脚本、CHANGELOG 里的大量盘符路径）。两份都是真实拉取的真实报告，可直接对照 `limitations` 与 `coverage` 查看工具在哪些地方"没看到"。
 
 ## AI 使用
 
-见 [`AI_USAGE.md`](AI_USAGE.md)。其中记录 4 条 AI 答错并被复核发现的例子，包括把"截断读取"擅自改成"跳过"、密钥扣分不封顶、逐文件拉取在匿名配额下不可行、路径正则漏掉一半盘符。
+见 [`AI_USAGE.md`](AI_USAGE.md)。其中记录 7 条 AI 答错并被复核发现的例子，包括把"截断读取"擅自改成"跳过"、密钥扣分不封顶、逐文件拉取在匿名配额下不可行、路径正则漏掉一半盘符。

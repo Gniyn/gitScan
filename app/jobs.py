@@ -15,6 +15,9 @@ class Job:
     advice: object = None
     advice_error: str = None
     error: str = None
+    reused: bool = False
+    cached_commit: str = None
+    merged_into: str = None
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
 
@@ -27,6 +30,9 @@ class Job:
             "advice": self.advice,
             "advice_error": self.advice_error,
             "error": self.error,
+            "reused": self.reused,
+            "cached_commit": self.cached_commit,
+            "merged_into": self.merged_into,
         }
 
 
@@ -57,6 +63,12 @@ class JobManager:
     def create(self, url):
         with self.lock:
             self._cleanup()
+            cached = self._reuse(url)
+            if cached is not None:
+                return cached
+            inflight = self._inflight(url)
+            if inflight is not None:
+                return inflight
             if self.active >= self.policy["max_active_scans"] + self.policy["max_queued_scans"]:
                 raise RuntimeError("扫描队列已满，请稍后重试")
             job = Job(id=uuid.uuid4().hex, url=url)
@@ -64,6 +76,37 @@ class JobManager:
             self.active += 1
         self.executor.submit(self._run, job)
         return job
+
+    def _inflight(self, url):
+        """同一仓库正在扫或排队时并入那个任务，避免重复消耗 GitHub 配额。"""
+        for job in self.jobs.values():
+            if job.url == url and job.status in ("queued", "running"):
+                merged = Job(id=uuid.uuid4().hex, url=url)
+                merged.status = job.status
+                merged.progress = job.progress
+                merged.report = job.report
+                merged.reused = True
+                merged.merged_into = job.id
+                merged.cached_commit = "in-flight:" + job.id
+                self.jobs[merged.id] = merged
+                return merged
+        return None
+
+    def _reuse(self, url):
+        """短时间内重复提交同一仓库时直接给上一次结果；跨过 refresh_ttl 就重扫（report 里固化 commit_sha）。"""
+        ttl = self.policy["refresh_ttl_seconds"]
+        now = time.time()
+        for job in self.jobs.values():
+            if job.url == url and job.status == "complete" and job.report is not None and now - job.updated_at <= ttl:
+                reused = Job(id=uuid.uuid4().hex, url=url)
+                reused.status = "complete"
+                reused.progress = "直接复用上一次扫描结果"
+                reused.report = job.report
+                reused.reused = True
+                reused.cached_commit = job.report.commit_sha
+                self.jobs[reused.id] = reused
+                return reused
+        return None
 
     def _run(self, job):
         try:
@@ -117,7 +160,18 @@ class JobManager:
     def get(self, job_id):
         with self.lock:
             job = self.jobs.get(job_id)
-            return job.public() if job else None
+            if not job:
+                return None
+            # 并入别的任务时直接读源任务的进度，避免两份状态各走各的
+            source = self.jobs.get(job.merged_into) if job.merged_into else None
+            if source is not None:
+                snapshot = source.public()
+                snapshot["id"] = job.id
+                snapshot["reused"] = True
+                snapshot["cached_commit"] = job.cached_commit
+                snapshot["merged_into"] = job.merged_into
+                return snapshot
+            return job.public()
 
     def attach_advice(self, job_id, advice=None, error=None):
         with self.lock:

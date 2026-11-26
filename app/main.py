@@ -68,7 +68,7 @@ def create_scan(request: ScanRequest):
         job = manager.create(request.url)
     except RuntimeError as error:
         raise HTTPException(status_code=429, detail=str(error))
-    return {"id": job.id, "status": job.status}
+    return {"id": job.id, "status": job.status, "reused": job.reused, "cached_commit": job.cached_commit}
 
 
 @app.get("/api/scans/{job_id}")

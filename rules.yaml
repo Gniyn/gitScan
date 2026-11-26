@@ -13,6 +13,8 @@ policy:
   max_queued_scans: 6
   cache_capacity: 24
   cache_ttl_seconds: 1800
+  refresh_ttl_seconds: 300
+  github_token_env: GITHUB_TOKEN
   github_api_base: https://api.github.com
   repository_hosts: [github.com, www.github.com]
   download_hosts: [api.github.com, codeload.github.com]
@@ -58,6 +60,9 @@ policy:
     - '*/testdata/*'
     - 'test_*.py'
     - '*_test.py'
+    - 'scripts/test-*'
+    - 'scripts/*test*'
+    - '*-ignore-revs'
   binary_control_ratio: 0.10
   placeholder_pattern: '(?i)(example|placeholder|your[_-]?(api[_-]?)?(key|token)|replace[_-]?me|dummy|changeme|xxxx|test[_-]?(key|token))'
 dimensions:
@@ -229,7 +234,9 @@ rules:
     max_deduction: 20
     message: 路径依赖具体机器或用户目录，示例路径也需人工确认。
     recommendation: 使用相对路径、配置项或平台路径 API。
-    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
+    count_mode: per_file
+    report_mode: file_summary
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**', '**/*-ignore-revs']
   - id: S001
     title: 疑似 sk- 密钥
     kind: content

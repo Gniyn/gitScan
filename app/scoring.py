@@ -26,11 +26,17 @@ def score_findings(findings, rulebook):
         if proposed == 0:
             finding.deduction_reason = "仅提示，不扣分"
             continue
-        if rule.get("count_mode") == "once_per_rule" and finding.rule_id in representatives:
-            finding.deduction_reason = "该规则已计分"
-            finding.related_finding_id = representatives[finding.rule_id]
+        counting_key = None
+        if rule.get("count_mode") == "once_per_rule":
+            counting_key = finding.rule_id
+        elif rule.get("count_mode") == "per_file":
+            counting_key = (finding.rule_id, finding.location.path if finding.location else None)
+        if counting_key is not None and counting_key in representatives:
+            finding.deduction_reason = "该规则已在本文件计分"
+            finding.related_finding_id = representatives[counting_key]
             continue
-        representatives.setdefault(finding.rule_id, finding.id)
+        if counting_key is not None:
+            representatives[counting_key] = finding.id
         rule_remaining = max(0, rule["max_deduction"] - rule_used[finding.rule_id])
         dimension_remaining = max(
             0, rulebook.dimensions[finding.dimension]["maximum"] - dimension_used[finding.dimension]
