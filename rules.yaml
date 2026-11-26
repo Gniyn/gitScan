@@ -63,6 +63,19 @@ policy:
     - 'scripts/test-*'
     - 'scripts/*test*'
     - '*-ignore-revs'
+    # 抓取/内联的仓库内容快照不是被检仓库的源码
+    - '*.min.js'
+    - '*.min.css'
+    - 'vendor/*'
+    - 'vendor/**'
+    - '*/vendor/**'
+    - 'node_modules/**'
+    - '*.lock'
+    - '*-lock.json'
+    - '*.snap'
+    # 本工具自己的样例报告里存着命中原文，属于自指噪声
+    - 'docs/samples/*'
+    - 'docs/samples/**'
   binary_control_ratio: 0.10
   placeholder_pattern: '(?i)(example|placeholder|your[_-]?(api[_-]?)?(key|token)|replace[_-]?me|dummy|changeme|xxxx|test[_-]?(key|token))'
 dimensions:
@@ -232,11 +245,12 @@ rules:
     priority: 80
     deduction: 3
     max_deduction: 20
+    # 说明文档与 AI 记录本来就靠"写出反例路径"来说明问题，扫它们只会制造噪声
     message: 路径依赖具体机器或用户目录，示例路径也需人工确认。
     recommendation: 使用相对路径、配置项或平台路径 API。
     count_mode: per_file
     report_mode: file_summary
-    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**', '**/*-ignore-revs']
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**', '**/*-ignore-revs', '**/*.min.js', '**/*.min.css', '**/vendor/**', '**/node_modules/**', '**/*.lock', '**/*-lock.json', '**/*.snap', 'docs/samples/**', 'AI_USAGE.md', '**/AI_USAGE.md', 'docs/ai-log.md', '**/ai-log.md']
   - id: S001
     title: 疑似 sk- 密钥
     kind: content

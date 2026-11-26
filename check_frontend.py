@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(r"D:\gitScan")
+ROOT = Path(__file__).resolve().parent
 html = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 
 fails = []

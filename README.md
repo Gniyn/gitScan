@@ -124,7 +124,7 @@ AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责�
 
 ## 样例报告
 
-[`docs/samples/gitscan-self.json`](docs/samples/gitscan-self.json) 是本项目上一版自扫结果（77 分，尚未按当前规则集重跑），[`docs/samples/hello-world.json`](docs/samples/hello-world.json) 是 `octocat/Hello-World`（75 分），[`docs/samples/cmder.json`](docs/samples/cmder.json) 是 `cmderdev/cmder`（59 分，含 Windows 脚本、CHANGELOG 里的大量盘符路径）。三份都是真实拉取的真实报告，可直接对照 `limitations` 与 `coverage` 查看工具在哪些地方"没看到"。
+[`docs/samples/gitscan-self.json`](docs/samples/gitscan-self.json) 是本项目自扫结果（74 分，基于 commit `8f5f896`；扣分项只有 README 缺 Windows 启动方式、README 缺可识别启动入口，以及两个前端检查脚本里的本机路径——后者已改成相对 `__file__`，属于"工具扫自己"会照出来的真实问题），[`docs/samples/hello-world.json`](docs/samples/hello-world.json) 是 `octocat/Hello-World`（75 分），[`docs/samples/cmder.json`](docs/samples/cmder.json) 是 `cmderdev/cmder`（59 分，含 Windows 脚本、CHANGELOG 里的大量盘符路径）。三份都是真实拉取的真实报告，可直接对照 `limitations` 与 `coverage` 查看工具在哪些地方"没看到"。
 
 ## AI 使用
 

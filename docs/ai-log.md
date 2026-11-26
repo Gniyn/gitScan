@@ -107,3 +107,11 @@
 - AI 的初版修法：给密钥类规则加封顶。方向不对——这里是"同一文件同一规则刷屏"，不是"惩罚过重"。
 - 我的修法：按 `(rule_id, path)` 合并上报，同文件命中计一处扣分、其余折叠并回指代表条目，消息里写明"本文件命中 N 处，行 a、b、c"。改完 59 分、`paths` 5/20、清单 14→5 条。
 - 顺带发现：`.git-blame-ignore-revs` 里的历史提交哈希被盘符正则误判成绝对路径，加进 P001 的排除清单。
+
+## 记录 9：工具扫自己，扫出了一堆"自指噪声"
+
+- 现象：把 `Gniyn/gitScan` 自己丢进工具扫，`paths` 维度只拿 2/20，扣分集中在 `AI_USAGE.md`（6 处）、`docs/ai-log.md`（9 处）、`docs/samples/*.json`（2 处）。
+- 判断：这三类文件本来就是"写出反例路径来说明问题"的文档，`D:\gitScan` 出现在 `AI_USAGE.md` 里是**举例**，不是缺陷；样例 JSON 里存的是别的仓库的命中原文，更不该算本仓库的问题。
+- 修法分两层：`policy.content_exclude_globs` 补 `docs/samples/**`、`*.min.js`、`vendor/**`、`node_modules/**`、`*.lock`、`*.snap` 等生成/第三方内容；P001 的 `exclude_paths` 单独排除 `AI_USAGE.md`、`docs/ai-log.md`。
+- 结果：62 → 68 → 74 分，`paths` 从 2/20 回到 14/20，剩下的两条命中是 `check_frontend.py:8` 和 `check_js_scope.py:12` 里的 `Path(r"D:\gitScan")`——**这两条是真的**，我自己写的检查脚本确实硬编码了本机目录，改成 `Path(__file__).resolve().parent` 才对。
+- 教训：验证工具的"检测能力"，最好的样本是它自己。它既暴露了误报（文档被当成缺陷），也暴露了真阳性（我自己的脚本）。

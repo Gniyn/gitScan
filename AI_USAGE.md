@@ -22,7 +22,7 @@
 
 ## AI 答错但被我发现的记录
 
-完整过程见 [`docs/ai-log.md`](docs/ai-log.md)。下面按发现顺序摘录 8 条，每条都记了**错在哪、怎么发现的、最后改成什么**，不是笼统的"AI 出过错"。前 4 条是代码层错误，第 5~7 条是"看起来改好了但没改对"，第 8 条是设计层错误（规则对了，聚合方式错了）。
+完整过程见 [`docs/ai-log.md`](docs/ai-log.md)。下面按发现顺序摘录 9 条，每条都记了**错在哪、怎么发现的、最后改成什么**，不是笼统的"AI 出过错"。前 4 条是代码层错误，第 5~7 条是"看起来改好了但没改对"，第 8 条是设计层错误（规则对了，聚合方式错了），第 9 条是拿工具扫自己扫出来的误报与真阳性。
 
 ### 摘录 1：截断读取被擅自改成跳过（最典型）
 
@@ -92,6 +92,30 @@
 - **修复**：加一层同步入口 `def run_advice(report): return asyncio.run(generate_advice(report))`，线程池只拿同步函数。
 - **教训**：把异步函数从事件循环搬到线程池，必须显式桥接；`ThreadPoolExecutor.submit` 不认协程，也不会报错，只会在序列化时炸。
 
+### 摘录 8：同一类问题刷屏，把 14 处真实命中变成 14 条重复告警
+
+**背景**：拿 `cmderdev/cmder` 做第二轮真实验证（这个仓库有 `.bat`/`.ps1`、README 里全是 Windows 路径，正是题目关心的形态）。首扫 45 分，`paths` 维度直接 0/20。
+
+**AI 给的第一版行为**：每条正则命中都生成一条独立 finding。结果清单里出现 14 条一模一样的"硬编码本机绝对路径"，其中 6 条来自同一个 `CHANGELOG.md`。前 6 条各扣 3 分，后 8 条扣 0 分，界面上看起来像"扣了 6 次"，实际规则只该按文件算一次。
+
+**我怎么发现的**：把 findings 按 `rule_id` 分组打出来，`P001` 占 14/19，而 `applied_deduction>0` 的只有 6 条；再对一遍 `coverage.scanned_files=51`，51 个文件不可能有 14 个独立路径问题。
+
+**修法**（改在了 `rules.yaml` 与 `app/scoring.py`、`app/scanner.py`，不是改输出文案）：
+
+1. `rules.yaml` 给 P001 加 `count_mode: per_file` + `report_mode: file_summary`；
+2. `app/scoring.py` 的计分键从"每条 finding"改成 `(rule_id, path)`，同文件同规则只扣一次，其余条目 `related_finding_id` 指回代表条目；
+3. `app/scanner.py` 按文件合并上报，命中数与行号写进 `message`，`Finding` 模型新增 `hit_count` 字段；
+4. `app/config.py` 的启动校验允许这两个新枚举，且 `file_summary` 只对 `kind: content` 合法（写错就拒绝启动）。
+
+**修完的效果**：`cmder` 从 45 分变成 59 分，`paths` 5/20；清单从 14 条压到 5 条，每条都带"本文件命中 N 处，行 …"。AI 追问我一句很有用的：**"45 分和 59 分哪个才是对的？"**——答案是 59，但 45 也没"算错"，它是"同一条问题被重复计价的产物"。这类问题不看清单结构是发现不了的，看总分反而会被"分数挺合理"骗过去。
+
+### 摘录 9：工具扫自己，扫出一堆「自指噪声」
+
+- **背景**：把 `Gniyn/gitScan` 自己丢进工具扫，`paths` 维度只拿 2/20。
+- **AI 的初版解释**：认为「路径命中集中在文档里，说明文档质量差」。判断错了——`AI_USAGE.md` 里写 `D:\gitScan` 是在举例说明反例，不是缺陷；`docs/samples/*.json` 存的是别的仓库的命中原文。
+- **修法**：`policy.content_exclude_globs` 补 `docs/samples/**`、`*.min.js`、`vendor/**`、`node_modules/**`、`*.lock`、`*.snap`；P001 的 `exclude_paths` 单独排除 `AI_USAGE.md`、`docs/ai-log.md`。
+- **结果**：62 → 68 → 74 分，`paths` 从 2/20 回到 14/20。剩下两条命中是 `check_frontend.py:8`、`check_js_scope.py:12` 里的本机路径常量——**这两条是真的**，我自己写的检查脚本确实硬编码了本机目录，改成 `Path(__file__).resolve().parent` 才对。
+
 ### 补充：AI 说"改好了"但没改对的地方
 
 修完 P001 之后我又扫了一次自己，结果 44 分、密钥维度 0 分——原因是 `tests/test_scanner.py` 里为了测试构造的假密钥被当成真实泄露。AI 的修复只动了规则，没有动检测范围。这提醒了一件事：**AI 的"已验证"要自己复核**，`17 passed` 不代表真实仓库上行为正确。最终改为测试样本目录不参与内容检测，并在 `limitations` 里显式说明跳过了几个文件。
@@ -110,19 +134,3 @@
 
 AI 没有参与任何对目标仓库的写操作。全部扫描只读，只在内存中解包 tarball，不执行仓库里的任何代码。
 
-### 摘录 8：同一类问题刷屏，把 14 处真实命中变成 14 条重复告警
-
-**背景**：拿 `cmderdev/cmder` 做第二轮真实验证（这个仓库有 `.bat`/`.ps1`、README 里全是 Windows 路径，正是题目关心的形态）。首扫 45 分，`paths` 维度直接 0/20。
-
-**AI 给的第一版行为**：每条正则命中都生成一条独立 finding。结果清单里出现 14 条一模一样的"硬编码本机绝对路径"，其中 6 条来自同一个 `CHANGELOG.md`。前 6 条各扣 3 分，后 8 条扣 0 分，界面上看起来像"扣了 6 次"，实际规则只该按文件算一次。
-
-**我怎么发现的**：把 findings 按 `rule_id` 分组打出来，`P001` 占 14/19，而 `applied_deduction>0` 的只有 6 条；再对一遍 `coverage.scanned_files=51`，51 个文件不可能有 14 个独立路径问题。
-
-**修法**（改在了 `rules.yaml` 与 `app/scoring.py`、`app/scanner.py`，不是改输出文案）：
-
-1. `rules.yaml` 给 P001 加 `count_mode: per_file` + `report_mode: file_summary`；
-2. `app/scoring.py` 的计分键从"每条 finding"改成 `(rule_id, path)`，同文件同规则只扣一次，其余条目 `related_finding_id` 指回代表条目；
-3. `app/scanner.py` 按文件合并上报，命中数与行号写进 `message`，`Finding` 模型新增 `hit_count` 字段；
-4. `app/config.py` 的启动校验允许这两个新枚举，且 `file_summary` 只对 `kind: content` 合法（写错就拒绝启动）。
-
-**修完的效果**：`cmder` 从 45 分变成 59 分，`paths` 5/20；清单从 14 条压到 5 条，每条都带"本文件命中 N 处，行 …"。AI 追问我一句很有用的：**"45 分和 59 分哪个才是对的？"**——答案是 59，但 45 也没"算错"，它是"同一条问题被重复计价的产物"。这类问题不看清单结构是发现不了的，看总分反而会被"分数挺合理"骗过去。

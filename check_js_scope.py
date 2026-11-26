@@ -9,7 +9,7 @@ import re
 import sys
 from pathlib import Path
 
-HTML = Path(r"D:\gitScan\static\index.html")
+HTML = Path(__file__).resolve().parent / "static" / "index.html"
 DECL_STATEMENT = re.compile(r"\b(?:const|let|var)\s+(?:[A-Za-z_$][\w$]*\s*=\s*[^;]*;?)(?:\s*,\s*[A-Za-z_$][\w$]*\s*=\s*[^;]*;?)*")
 ASSIGN = re.compile(r"(?<![\w.$])([A-Za-z_$][\w$]*)\s*(?:\+|-|\*|/|\*\*|%|\|\||&&|\?\?)?=(?!=)")
 IGNORE = {"const", "let", "var", "return", "if", "else", "for", "while", "typeof", "await", "new"}

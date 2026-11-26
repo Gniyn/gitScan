@@ -1,449 +1,531 @@
 {
-  "advice": null,
-  "error": null,
-  "id": "08ff54215cae42dd82abc90ae3d5a5bf",
-  "progress": "完成",
-  "report": {
-    "advice": null,
-    "checks": {
-      "dependencies": {
-        "checked_patterns": [
-          "pyproject.toml",
-          "requirements*.txt",
-          "Pipfile",
-          "setup.py",
-          "setup.cfg",
-          "environment.yml",
-          "package.json",
-          "Cargo.toml",
-          "go.mod",
-          "pom.xml",
-          "build.gradle",
-          "*.csproj",
-          "Gemfile",
-          "composer.json",
-          "*/pyproject.toml",
-          "*/requirements*.txt",
-          "*/Pipfile",
-          "*/package.json",
-          "*/Cargo.toml",
-          "*/go.mod",
-          "*/pom.xml",
-          "*/build.gradle",
-          "*/*.csproj",
-          "*/Gemfile",
-          "*/composer.json"
-        ],
-        "evidence_paths": [
-          "requirements.txt"
-        ],
-        "label": "依赖清单",
-        "state": "present"
-      },
-      "portable_docs": {
-        "checked_patterns": [
-          "README",
-          "README.md",
-          "README.rst",
-          "README.txt",
-          "README.markdown"
-        ],
-        "evidence_paths": [
-          "README.md"
-        ],
-        "label": "跨平台文档命令",
-        "state": "present"
-      },
-      "portable_entry": {
-        "checked_patterns": [
-          "start.sh",
-          "run.sh",
-          "main.py",
-          "app.py",
-          "manage.py",
-          "__main__.py",
-          "*/__main__.py",
-          "scripts/start.sh",
-          "scripts/run.sh",
-          "Dockerfile",
-          "Makefile",
-          "compose.yml",
-          "docker-compose.yml",
-          "package.json"
-        ],
-        "evidence_paths": [],
-        "label": "可识别跨平台启动方式",
-        "state": "absent"
-      },
-      "readme": {
-        "checked_patterns": [
-          "README",
-          "README.md",
-          "README.rst",
-          "README.txt",
-          "README.markdown"
-        ],
-        "evidence_paths": [
-          "README.md"
-        ],
-        "label": "README",
-        "state": "present"
-      },
-      "startup": {
-        "checked_patterns": [
-          "start.*",
-          "run.*",
-          "main.py",
-          "app.py",
-          "manage.py",
-          "__main__.py",
-          "*/__main__.py",
-          "scripts/start.*",
-          "scripts/run.*",
-          "Dockerfile",
-          "Makefile",
-          "compose.yml",
-          "docker-compose.yml",
-          "package.json"
-        ],
-        "evidence_paths": [],
-        "label": "可识别启动入口",
-        "state": "absent"
-      },
-      "startup_docs": {
-        "checked_patterns": [
-          "README",
-          "README.md",
-          "README.rst",
-          "README.txt",
-          "README.markdown"
-        ],
-        "evidence_paths": [
-          "README.md"
-        ],
-        "label": "README 启动说明",
-        "state": "present"
-      },
-      "windows_docs": {
-        "checked_patterns": [
-          "README",
-          "README.md",
-          "README.rst",
-          "README.txt",
-          "README.markdown"
-        ],
-        "evidence_paths": [
-          "README.md"
-        ],
-        "label": "Windows 文档命令",
-        "state": "present"
-      },
-      "windows_entry": {
-        "checked_patterns": [
-          "start.bat",
-          "start.cmd",
-          "start.ps1",
-          "start.vbs",
-          "run.bat",
-          "run.cmd",
-          "run.ps1",
-          "run.vbs",
-          "scripts/start.bat",
-          "scripts/start.cmd",
-          "scripts/start.ps1",
-          "scripts/run.bat",
-          "scripts/run.cmd",
-          "scripts/run.ps1",
-          "package.json",
-          "README",
-          "README.md",
-          "README.rst",
-          "README.txt",
-          "README.markdown"
-        ],
-        "evidence_paths": [
-          "README.md"
-        ],
-        "label": "Windows 启动方式",
-        "state": "present"
-      }
-    },
-    "commit_sha": "d6c334b7b20a3386cef10e31a418149730537bee",
-    "coverage": {
-      "binary_files": 0,
-      "compressed_bytes": 26259,
-      "content_skipped_files": 2,
-      "excluded_by_file_budget": 0,
-      "expanded_bytes": 112640,
-      "files": [
-        {
-          "original_bytes": 86,
-          "path": ".env.example",
-          "scanned_bytes": 86,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 46,
-          "path": ".gitignore",
-          "scanned_bytes": 46,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 3089,
-          "path": "README.md",
-          "scanned_bytes": 3089,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 0,
-          "path": "app/__init__.py",
-          "scanned_bytes": 0,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 3356,
-          "path": "app/advice.py",
-          "scanned_bytes": 3356,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 2963,
-          "path": "app/config.py",
-          "scanned_bytes": 2963,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 10206,
-          "path": "app/github.py",
-          "scanned_bytes": 10206,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 3408,
-          "path": "app/jobs.py",
-          "scanned_bytes": 3408,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 2573,
-          "path": "app/main.py",
-          "scanned_bytes": 2573,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 1229,
-          "path": "app/models.py",
-          "scanned_bytes": 1229,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 14636,
-          "path": "app/scanner.py",
-          "scanned_bytes": 14636,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 2480,
-          "path": "app/scoring.py",
-          "scanned_bytes": 2480,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 42,
-          "path": "pytest.ini",
-          "scanned_bytes": 42,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 80,
-          "path": "requirements.txt",
-          "scanned_bytes": 80,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 10073,
-          "path": "rules.yaml",
-          "scanned_bytes": 10073,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 25273,
-          "path": "static/index.html",
-          "scanned_bytes": 25273,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 700,
-          "path": "tests/test_github.py",
-          "scanned_bytes": 700,
-          "skip_reason": null,
-          "truncated": false
-        },
-        {
-          "original_bytes": 5704,
-          "path": "tests/test_scanner.py",
-          "scanned_bytes": 5704,
-          "skip_reason": null,
-          "truncated": false
-        }
-      ],
-      "ignored_files": 0,
-      "limits": {
-        "max_file_bytes": 262144,
-        "max_files": 2000
-      },
-      "other_archive_members": 4,
-      "scanned_bytes": 85944,
-      "scanned_files": 18,
-      "selected_files": 18,
-      "total_files": 18,
-      "truncated_files": 0,
-      "unsupported_encoding_files": 0
-    },
-    "deductions": [
-      {
-        "finding_id": "6dd0355ccc0e9f7f2919bda9",
-        "points": 10,
-        "rule_id": "R003"
-      },
-      {
-        "finding_id": "02cc4f0bbb92d647bcfedd24",
-        "points": 10,
-        "rule_id": "W001"
-      },
-      {
-        "finding_id": "f1b0490b033fdbdaf4becc8e",
-        "points": 3,
-        "rule_id": "P001"
-      }
-    ],
-    "dimensions": {
-      "paths": {
-        "deduction": 3,
-        "label": "硬编码路径",
-        "maximum": 20,
-        "score": 17
-      },
-      "readiness": {
-        "deduction": 10,
-        "label": "接入完整性",
-        "maximum": 35,
-        "score": 25
-      },
-      "secrets": {
-        "deduction": 0,
-        "label": "密钥与敏感文件",
-        "maximum": 30,
-        "score": 30
-      },
-      "windows": {
-        "deduction": 10,
-        "label": "Windows 依赖",
-        "maximum": 15,
-        "score": 5
-      }
-    },
-    "engine_version": "1.0.0",
-    "findings": [
-      {
-        "applied_deduction": 10,
-        "confidence": "medium",
-        "deduction_reason": "按规则扣分",
-        "dimension": "readiness",
-        "evidence": "检查候选：start.*, run.*, main.py, app.py, manage.py, __main__.py, */__main__.py, scripts/start.*, scripts/run.*, Dockerfile, Makefile, compose.yml, docker-compose.yml, package.json",
-        "id": "6dd0355ccc0e9f7f2919bda9",
-        "location": null,
-        "message": "未发现规则支持的启动入口；纯库项目可能不需要独立入口。",
-        "proposed_deduction": 10,
-        "recommendation": "增加可复现入口，或说明库的最小使用示例。",
-        "related_finding_id": null,
-        "rule_id": "R003",
-        "rule_version": "1.0.0",
-        "severity": "medium",
-        "source_url": null,
-        "title": "缺少可识别启动入口"
-      },
-      {
-        "applied_deduction": 10,
-        "confidence": "medium",
-        "deduction_reason": "按规则扣分",
-        "dimension": "windows",
-        "evidence": "证据文件：README.md",
-        "id": "02cc4f0bbb92d647bcfedd24",
-        "location": {
-          "column_end": null,
-          "column_start": null,
-          "line_end": null,
-          "line_start": null,
-          "path": "README.md"
-        },
-        "message": "已发现 Windows 启动证据，未发现规则支持的跨平台替代方式。",
-        "proposed_deduction": 10,
-        "recommendation": "提供 Python/Node 入口、Shell 脚本或容器启动方式。",
-        "related_finding_id": null,
-        "rule_id": "W001",
-        "rule_version": "1.0.0",
-        "severity": "medium",
-        "source_url": "https://github.com/Gniyn/gitScan/blob/d6c334b7b20a3386cef10e31a418149730537bee/README.md",
-        "title": "仅发现 Windows 启动方式"
-      },
-      {
-        "applied_deduction": 3,
-        "confidence": "medium",
-        "deduction_reason": "按规则扣分",
-        "dimension": "paths",
-        "evidence": "    pattern: '(?i)(?<![A-Za-z0-9])(?:[CD]:[\\\\/](?:[^\\s\"''`<>|;,]+)?|/Users/[^\\s\"''`<>|;,]+)'",
-        "id": "f1b0490b033fdbdaf4becc8e",
-        "location": {
-          "column_end": 79,
-          "column_start": 69,
-          "line_end": 210,
-          "line_start": 210,
-          "path": "rules.yaml"
-        },
-        "message": "路径依赖具体机器或用户目录，示例路径也需人工确认。",
-        "proposed_deduction": 3,
-        "recommendation": "使用相对路径、配置项或平台路径 API。",
-        "related_finding_id": null,
-        "rule_id": "P001",
-        "rule_version": "1.0.0",
-        "severity": "medium",
-        "source_url": "https://github.com/Gniyn/gitScan/blob/d6c334b7b20a3386cef10e31a418149730537bee/rules.yaml#L210",
-        "title": "硬编码本机绝对路径"
-      }
-    ],
-    "limitations": [
-      "已跳过 2 个测试样本文件，其内容未参与密钥与路径检测（如 tests/test_github.py, tests/test_scanner.py）。",
-      "仅检查当前 commit，不检查 Git 历史、不验证凭证有效性、不执行仓库内容。"
-    ],
-    "repository": {
-      "full_name": "Gniyn/gitScan",
-      "name": "gitScan",
-      "owner": "Gniyn",
-      "url": "https://github.com/Gniyn/gitScan"
-    },
-    "rules_digest": "58134d00e9dd95002a7ae3e3f9dfd521f4a79a5e0144a509cf3ea05e975a01e5",
-    "scan_id": "08ff54215cae42dd82abc90ae3d5a5bf",
-    "schema_version": "1.0.0",
-    "score": 77,
-    "score_kind": "full",
-    "status": "complete"
+  "schema_version": "1.0.0",
+  "scan_id": "fb607fd35344481cabefd5536b0efd31",
+  "repository": {
+    "owner": "Gniyn",
+    "name": "gitScan",
+    "full_name": "Gniyn/gitScan",
+    "url": "https://github.com/Gniyn/gitScan"
   },
-  "status": "complete"
+  "commit_sha": "8f5f896b7a9708f523398600677e23c3e61115d6",
+  "engine_version": "1.0.0",
+  "rules_digest": "aad36dc59855ce183af5d64b2f2f54b38d0f4c70bf71d8a2a31d69d80324004b",
+  "status": "complete",
+  "score": 74,
+  "score_kind": "full",
+  "dimensions": {
+    "readiness": {
+      "label": "接入完整性",
+      "maximum": 35,
+      "deduction": 10,
+      "score": 25
+    },
+    "windows": {
+      "label": "Windows 依赖",
+      "maximum": 15,
+      "deduction": 10,
+      "score": 5
+    },
+    "paths": {
+      "label": "硬编码路径",
+      "maximum": 20,
+      "deduction": 6,
+      "score": 14
+    },
+    "secrets": {
+      "label": "密钥与敏感文件",
+      "maximum": 30,
+      "deduction": 0,
+      "score": 30
+    }
+  },
+  "checks": {
+    "readme": {
+      "label": "README",
+      "state": "present",
+      "evidence_paths": [
+        "README.md"
+      ],
+      "checked_patterns": [
+        "README",
+        "README.md",
+        "README.rst",
+        "README.txt",
+        "README.markdown"
+      ]
+    },
+    "dependencies": {
+      "label": "依赖清单",
+      "state": "present",
+      "evidence_paths": [
+        "requirements.txt"
+      ],
+      "checked_patterns": [
+        "pyproject.toml",
+        "requirements*.txt",
+        "Pipfile",
+        "setup.py",
+        "setup.cfg",
+        "environment.yml",
+        "package.json",
+        "Cargo.toml",
+        "go.mod",
+        "pom.xml",
+        "build.gradle",
+        "*.csproj",
+        "Gemfile",
+        "composer.json",
+        "*/pyproject.toml",
+        "*/requirements*.txt",
+        "*/Pipfile",
+        "*/package.json",
+        "*/Cargo.toml",
+        "*/go.mod",
+        "*/pom.xml",
+        "*/build.gradle",
+        "*/*.csproj",
+        "*/Gemfile",
+        "*/composer.json"
+      ]
+    },
+    "startup": {
+      "label": "可识别启动入口",
+      "state": "absent",
+      "evidence_paths": [],
+      "checked_patterns": [
+        "start.*",
+        "run.*",
+        "main.py",
+        "app.py",
+        "manage.py",
+        "__main__.py",
+        "*/__main__.py",
+        "scripts/start.*",
+        "scripts/run.*",
+        "Dockerfile",
+        "Makefile",
+        "compose.yml",
+        "docker-compose.yml",
+        "package.json"
+      ]
+    },
+    "startup_docs": {
+      "label": "README 启动说明",
+      "state": "present",
+      "evidence_paths": [
+        "README.md"
+      ],
+      "checked_patterns": [
+        "README",
+        "README.md",
+        "README.rst",
+        "README.txt",
+        "README.markdown"
+      ]
+    },
+    "windows_entry": {
+      "label": "Windows 启动方式",
+      "state": "present",
+      "evidence_paths": [
+        "README.md"
+      ],
+      "checked_patterns": [
+        "start.bat",
+        "start.cmd",
+        "start.ps1",
+        "start.vbs",
+        "run.bat",
+        "run.cmd",
+        "run.ps1",
+        "run.vbs",
+        "scripts/start.bat",
+        "scripts/start.cmd",
+        "scripts/start.ps1",
+        "scripts/run.bat",
+        "scripts/run.cmd",
+        "scripts/run.ps1",
+        "package.json",
+        "README",
+        "README.md",
+        "README.rst",
+        "README.txt",
+        "README.markdown"
+      ]
+    },
+    "portable_entry": {
+      "label": "可识别跨平台启动方式",
+      "state": "absent",
+      "evidence_paths": [],
+      "checked_patterns": [
+        "start.sh",
+        "run.sh",
+        "main.py",
+        "app.py",
+        "manage.py",
+        "__main__.py",
+        "*/__main__.py",
+        "scripts/start.sh",
+        "scripts/run.sh",
+        "Dockerfile",
+        "Makefile",
+        "compose.yml",
+        "docker-compose.yml",
+        "package.json"
+      ]
+    },
+    "windows_docs": {
+      "label": "Windows 文档命令",
+      "state": "present",
+      "evidence_paths": [
+        "README.md"
+      ],
+      "checked_patterns": [
+        "README",
+        "README.md",
+        "README.rst",
+        "README.txt",
+        "README.markdown"
+      ]
+    },
+    "portable_docs": {
+      "label": "跨平台文档命令",
+      "state": "present",
+      "evidence_paths": [
+        "README.md"
+      ],
+      "checked_patterns": [
+        "README",
+        "README.md",
+        "README.rst",
+        "README.txt",
+        "README.markdown"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "41d2707af56e162ea408b10c",
+      "rule_id": "R003",
+      "rule_version": "1.0.0",
+      "dimension": "readiness",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "缺少可识别启动入口",
+      "message": "未发现规则支持的启动入口；纯库项目可能不需要独立入口。",
+      "location": null,
+      "evidence": "检查候选：start.*, run.*, main.py, app.py, manage.py, __main__.py, */__main__.py, scripts/start.*, scripts/run.*, Dockerfile, Makefile, compose.yml, docker-compose.yml, package.json",
+      "proposed_deduction": 10,
+      "applied_deduction": 10,
+      "deduction_reason": "按规则扣分",
+      "related_finding_id": null,
+      "hit_count": 1,
+      "recommendation": "增加可复现入口，或说明库的最小使用示例。",
+      "source_url": null
+    },
+    {
+      "id": "66ca8756cd8912608ec10e90",
+      "rule_id": "W001",
+      "rule_version": "1.0.0",
+      "dimension": "windows",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "仅发现 Windows 启动方式",
+      "message": "已发现 Windows 启动证据，未发现规则支持的跨平台替代方式。",
+      "location": {
+        "path": "README.md",
+        "line_start": null,
+        "column_start": null,
+        "line_end": null,
+        "column_end": null
+      },
+      "evidence": "证据文件：README.md",
+      "proposed_deduction": 10,
+      "applied_deduction": 10,
+      "deduction_reason": "按规则扣分",
+      "related_finding_id": null,
+      "hit_count": 1,
+      "recommendation": "提供 Python/Node 入口、Shell 脚本或容器启动方式。",
+      "source_url": "https://github.com/Gniyn/gitScan/blob/8f5f896b7a9708f523398600677e23c3e61115d6/README.md"
+    },
+    {
+      "id": "dd918e0c29653fd12b649bea",
+      "rule_id": "P001",
+      "rule_version": "1.0.0",
+      "dimension": "paths",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "硬编码本机绝对路径",
+      "message": "路径依赖具体机器或用户目录，示例路径也需人工确认。（本文件命中 1 处，行 8）",
+      "location": {
+        "path": "check_frontend.py",
+        "line_start": 8,
+        "column_start": 15,
+        "line_end": 8,
+        "column_end": 24
+      },
+      "evidence": "ROOT = Path(r\"D:\\gitScan\")",
+      "proposed_deduction": 3,
+      "applied_deduction": 3,
+      "deduction_reason": "按规则扣分",
+      "related_finding_id": null,
+      "hit_count": 1,
+      "recommendation": "使用相对路径、配置项或平台路径 API。",
+      "source_url": "https://github.com/Gniyn/gitScan/blob/8f5f896b7a9708f523398600677e23c3e61115d6/check_frontend.py#L8"
+    },
+    {
+      "id": "a344f7ce57bcc3f68cbaa42d",
+      "rule_id": "P001",
+      "rule_version": "1.0.0",
+      "dimension": "paths",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "硬编码本机绝对路径",
+      "message": "路径依赖具体机器或用户目录，示例路径也需人工确认。（本文件命中 1 处，行 12）",
+      "location": {
+        "path": "check_js_scope.py",
+        "line_start": 12,
+        "column_start": 15,
+        "line_end": 12,
+        "column_end": 42
+      },
+      "evidence": "HTML = Path(r\"D:\\gitScan\\static\\index.html\")",
+      "proposed_deduction": 3,
+      "applied_deduction": 3,
+      "deduction_reason": "按规则扣分",
+      "related_finding_id": null,
+      "hit_count": 1,
+      "recommendation": "使用相对路径、配置项或平台路径 API。",
+      "source_url": "https://github.com/Gniyn/gitScan/blob/8f5f896b7a9708f523398600677e23c3e61115d6/check_js_scope.py#L12"
+    }
+  ],
+  "deductions": [
+    {
+      "finding_id": "41d2707af56e162ea408b10c",
+      "rule_id": "R003",
+      "points": 10
+    },
+    {
+      "finding_id": "66ca8756cd8912608ec10e90",
+      "rule_id": "W001",
+      "points": 10
+    },
+    {
+      "finding_id": "dd918e0c29653fd12b649bea",
+      "rule_id": "P001",
+      "points": 3
+    },
+    {
+      "finding_id": "a344f7ce57bcc3f68cbaa42d",
+      "rule_id": "P001",
+      "points": 3
+    }
+  ],
+  "coverage": {
+    "total_files": 26,
+    "selected_files": 26,
+    "scanned_files": 25,
+    "content_skipped_files": 7,
+    "excluded_by_file_budget": 0,
+    "binary_files": 1,
+    "ignored_files": 0,
+    "unsupported_encoding_files": 0,
+    "truncated_files": 0,
+    "other_archive_members": 7,
+    "compressed_bytes": 947730,
+    "expanded_bytes": 1157120,
+    "scanned_bytes": 195914,
+    "limits": {
+      "max_files": 2000,
+      "max_file_bytes": 262144
+    },
+    "files": [
+      {
+        "path": ".env.example",
+        "original_bytes": 86,
+        "scanned_bytes": 86,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": ".gitignore",
+        "original_bytes": 120,
+        "scanned_bytes": 120,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "AI_USAGE.md",
+        "original_bytes": 12232,
+        "scanned_bytes": 12232,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "README.md",
+        "original_bytes": 8889,
+        "scanned_bytes": 8889,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/__init__.py",
+        "original_bytes": 0,
+        "scanned_bytes": 0,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/advice.py",
+        "original_bytes": 3957,
+        "scanned_bytes": 3957,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/config.py",
+        "original_bytes": 3701,
+        "scanned_bytes": 3701,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/github.py",
+        "original_bytes": 10874,
+        "scanned_bytes": 10874,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/jobs.py",
+        "original_bytes": 6910,
+        "scanned_bytes": 6910,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/main.py",
+        "original_bytes": 3423,
+        "scanned_bytes": 3423,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/models.py",
+        "original_bytes": 1252,
+        "scanned_bytes": 1252,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/scanner.py",
+        "original_bytes": 17577,
+        "scanned_bytes": 17577,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "app/scoring.py",
+        "original_bytes": 2771,
+        "scanned_bytes": 2771,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "check_frontend.py",
+        "original_bytes": 2195,
+        "scanned_bytes": 2195,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "check_js_scope.py",
+        "original_bytes": 1887,
+        "scanned_bytes": 1887,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "docs/ai-log.md",
+        "original_bytes": 7748,
+        "scanned_bytes": 7748,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "docs/samples/cmder.json",
+        "original_bytes": 40516,
+        "scanned_bytes": 40516,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "docs/samples/gitscan-self.json",
+        "original_bytes": 12399,
+        "scanned_bytes": 12399,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "docs/samples/hello-world.json",
+        "original_bytes": 8793,
+        "scanned_bytes": 8793,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "docs/screenshots/cmder.png",
+        "original_bytes": 930283,
+        "scanned_bytes": 0,
+        "truncated": false,
+        "skip_reason": "binary"
+      },
+      {
+        "path": "pytest.ini",
+        "original_bytes": 42,
+        "scanned_bytes": 42,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "requirements.txt",
+        "original_bytes": 80,
+        "scanned_bytes": 80,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "rules.yaml",
+        "original_bytes": 11672,
+        "scanned_bytes": 11672,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "static/index.html",
+        "original_bytes": 28515,
+        "scanned_bytes": 28515,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "tests/test_github.py",
+        "original_bytes": 700,
+        "scanned_bytes": 700,
+        "truncated": false,
+        "skip_reason": null
+      },
+      {
+        "path": "tests/test_scanner.py",
+        "original_bytes": 9575,
+        "scanned_bytes": 9575,
+        "truncated": false,
+        "skip_reason": null
+      }
+    ]
+  },
+  "limitations": [
+    "已跳过 7 个测试样本文件，其内容未参与密钥与路径检测（如 AI_USAGE.md, docs/ai-log.md, docs/samples/cmder.json 等）。",
+    "仅检查当前 commit，不检查 Git 历史、不验证凭证有效性、不执行仓库内容。"
+  ],
+  "advice": null
 }
