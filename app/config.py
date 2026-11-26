@@ -42,6 +42,10 @@ class Rulebook:
                 raise ValueError("Deductions cannot be negative")
             if rule.get("count_mode", "per_finding") not in ("per_finding", "once_per_rule"):
                 raise ValueError("Unknown count mode")
+            if rule.get("report_mode", "per_finding") not in ("per_finding", "summary"):
+                raise ValueError("Unknown report mode")
+            if rule.get("report_mode") == "summary" and rule["kind"] != "path":
+                raise ValueError("Summary report mode is only valid for path rules")
             if rule["dimension"] == "secrets" and rule.get("count_mode") != "once_per_rule":
                 raise ValueError("Secret rules must count once per rule")
             for check, state in rule.get("when", {}).items():
@@ -57,6 +61,11 @@ class Rulebook:
     @staticmethod
     def matches(path, patterns):
         return any(fnmatch.fnmatchcase(path.casefold(), pattern.casefold()) for pattern in patterns)
+
+    @staticmethod
+    def matches_any(path, patterns):
+        """Case-sensitive glob match, used where a glob is tuned to a file name."""
+        return any(fnmatch.fnmatchcase(path, pattern) for pattern in patterns)
 
     def redact(self, text):
         result = text

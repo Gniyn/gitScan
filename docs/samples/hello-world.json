@@ -1,0 +1,313 @@
+{
+  "advice": null,
+  "error": null,
+  "id": "d3076c0a4011462b883877728f61e4da",
+  "progress": "完成",
+  "report": {
+    "advice": null,
+    "checks": {
+      "dependencies": {
+        "checked_patterns": [
+          "pyproject.toml",
+          "requirements*.txt",
+          "Pipfile",
+          "setup.py",
+          "setup.cfg",
+          "environment.yml",
+          "package.json",
+          "Cargo.toml",
+          "go.mod",
+          "pom.xml",
+          "build.gradle",
+          "*.csproj",
+          "Gemfile",
+          "composer.json",
+          "*/pyproject.toml",
+          "*/requirements*.txt",
+          "*/Pipfile",
+          "*/package.json",
+          "*/Cargo.toml",
+          "*/go.mod",
+          "*/pom.xml",
+          "*/build.gradle",
+          "*/*.csproj",
+          "*/Gemfile",
+          "*/composer.json"
+        ],
+        "evidence_paths": [],
+        "label": "依赖清单",
+        "state": "absent"
+      },
+      "portable_docs": {
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ],
+        "evidence_paths": [],
+        "label": "跨平台文档命令",
+        "state": "absent"
+      },
+      "portable_entry": {
+        "checked_patterns": [
+          "start.sh",
+          "run.sh",
+          "main.py",
+          "app.py",
+          "manage.py",
+          "__main__.py",
+          "*/__main__.py",
+          "scripts/start.sh",
+          "scripts/run.sh",
+          "Dockerfile",
+          "Makefile",
+          "compose.yml",
+          "docker-compose.yml",
+          "package.json"
+        ],
+        "evidence_paths": [],
+        "label": "可识别跨平台启动方式",
+        "state": "absent"
+      },
+      "readme": {
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ],
+        "evidence_paths": [
+          "README"
+        ],
+        "label": "README",
+        "state": "present"
+      },
+      "startup": {
+        "checked_patterns": [
+          "start.*",
+          "run.*",
+          "main.py",
+          "app.py",
+          "manage.py",
+          "__main__.py",
+          "*/__main__.py",
+          "scripts/start.*",
+          "scripts/run.*",
+          "Dockerfile",
+          "Makefile",
+          "compose.yml",
+          "docker-compose.yml",
+          "package.json"
+        ],
+        "evidence_paths": [],
+        "label": "可识别启动入口",
+        "state": "absent"
+      },
+      "startup_docs": {
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ],
+        "evidence_paths": [],
+        "label": "README 启动说明",
+        "state": "absent"
+      },
+      "windows_docs": {
+        "checked_patterns": [
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ],
+        "evidence_paths": [],
+        "label": "Windows 文档命令",
+        "state": "absent"
+      },
+      "windows_entry": {
+        "checked_patterns": [
+          "start.bat",
+          "start.cmd",
+          "start.ps1",
+          "start.vbs",
+          "run.bat",
+          "run.cmd",
+          "run.ps1",
+          "run.vbs",
+          "scripts/start.bat",
+          "scripts/start.cmd",
+          "scripts/start.ps1",
+          "scripts/run.bat",
+          "scripts/run.cmd",
+          "scripts/run.ps1",
+          "package.json",
+          "README",
+          "README.md",
+          "README.rst",
+          "README.txt",
+          "README.markdown"
+        ],
+        "evidence_paths": [],
+        "label": "Windows 启动方式",
+        "state": "absent"
+      }
+    },
+    "commit_sha": "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+    "coverage": {
+      "binary_files": 0,
+      "compressed_bytes": 265,
+      "content_skipped_files": 0,
+      "excluded_by_file_budget": 0,
+      "expanded_bytes": 10240,
+      "files": [
+        {
+          "original_bytes": 13,
+          "path": "README",
+          "scanned_bytes": 13,
+          "skip_reason": null,
+          "truncated": false
+        }
+      ],
+      "ignored_files": 0,
+      "limits": {
+        "max_file_bytes": 262144,
+        "max_files": 2000
+      },
+      "other_archive_members": 1,
+      "scanned_bytes": 13,
+      "scanned_files": 1,
+      "selected_files": 1,
+      "total_files": 1,
+      "truncated_files": 0,
+      "unsupported_encoding_files": 0
+    },
+    "deductions": [
+      {
+        "finding_id": "3b16b02cf72b1ce4ccc1cbaa",
+        "points": 10,
+        "rule_id": "R002"
+      },
+      {
+        "finding_id": "e5037d20d89bef092ff1ffc3",
+        "points": 10,
+        "rule_id": "R003"
+      },
+      {
+        "finding_id": "9ed87dd94db005ea75e8acb0",
+        "points": 5,
+        "rule_id": "R004"
+      }
+    ],
+    "dimensions": {
+      "paths": {
+        "deduction": 0,
+        "label": "硬编码路径",
+        "maximum": 20,
+        "score": 20
+      },
+      "readiness": {
+        "deduction": 25,
+        "label": "接入完整性",
+        "maximum": 35,
+        "score": 10
+      },
+      "secrets": {
+        "deduction": 0,
+        "label": "密钥与敏感文件",
+        "maximum": 30,
+        "score": 30
+      },
+      "windows": {
+        "deduction": 0,
+        "label": "Windows 依赖",
+        "maximum": 15,
+        "score": 15
+      }
+    },
+    "engine_version": "1.0.0",
+    "findings": [
+      {
+        "applied_deduction": 10,
+        "confidence": "medium",
+        "deduction_reason": "按规则扣分",
+        "dimension": "readiness",
+        "evidence": "检查候选：pyproject.toml, requirements*.txt, Pipfile, setup.py, setup.cfg, environment.yml, package.json, Cargo.toml, go.mod, pom.xml, build.gradle, *.csproj, Gemfile, composer.json, */",
+        "id": "3b16b02cf72b1ce4ccc1cbaa",
+        "location": null,
+        "message": "未发现规则支持的依赖清单；无外部依赖的项目可人工确认。",
+        "proposed_deduction": 10,
+        "recommendation": "提供依赖清单或明确说明无需安装依赖。",
+        "related_finding_id": null,
+        "rule_id": "R002",
+        "rule_version": "1.0.0",
+        "severity": "medium",
+        "source_url": null,
+        "title": "缺少可识别依赖清单"
+      },
+      {
+        "applied_deduction": 10,
+        "confidence": "medium",
+        "deduction_reason": "按规则扣分",
+        "dimension": "readiness",
+        "evidence": "检查候选：start.*, run.*, main.py, app.py, manage.py, __main__.py, */__main__.py, scripts/start.*, scripts/run.*, Dockerfile, Makefile, compose.yml, docker-compose.yml, package.json",
+        "id": "e5037d20d89bef092ff1ffc3",
+        "location": null,
+        "message": "未发现规则支持的启动入口；纯库项目可能不需要独立入口。",
+        "proposed_deduction": 10,
+        "recommendation": "增加可复现入口，或说明库的最小使用示例。",
+        "related_finding_id": null,
+        "rule_id": "R003",
+        "rule_version": "1.0.0",
+        "severity": "medium",
+        "source_url": null,
+        "title": "缺少可识别启动入口"
+      },
+      {
+        "applied_deduction": 5,
+        "confidence": "medium",
+        "deduction_reason": "按规则扣分",
+        "dimension": "readiness",
+        "evidence": "证据文件：README",
+        "id": "9ed87dd94db005ea75e8acb0",
+        "location": {
+          "column_end": null,
+          "column_start": null,
+          "line_end": null,
+          "line_start": null,
+          "path": "README"
+        },
+        "message": "已扫描 README 未发现可识别启动说明。",
+        "proposed_deduction": 5,
+        "recommendation": "写明安装、配置及最小启动命令。",
+        "related_finding_id": null,
+        "rule_id": "R004",
+        "rule_version": "1.0.0",
+        "severity": "low",
+        "source_url": "https://github.com/octocat/Hello-World/blob/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d/README",
+        "title": "README 缺少可识别启动说明"
+      }
+    ],
+    "limitations": [
+      "仅检查当前 commit，不检查 Git 历史、不验证凭证有效性、不执行仓库内容。"
+    ],
+    "repository": {
+      "full_name": "octocat/Hello-World",
+      "name": "Hello-World",
+      "owner": "octocat",
+      "url": "https://github.com/octocat/Hello-World"
+    },
+    "rules_digest": "58134d00e9dd95002a7ae3e3f9dfd521f4a79a5e0144a509cf3ea05e975a01e5",
+    "scan_id": "d3076c0a4011462b883877728f61e4da",
+    "schema_version": "1.0.0",
+    "score": 75,
+    "score_kind": "full",
+    "status": "complete"
+  },
+  "status": "complete"
+}

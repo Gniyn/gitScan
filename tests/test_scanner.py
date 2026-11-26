@@ -2,7 +2,7 @@ import io
 import tarfile
 
 from app.config import Rulebook
-from app.scanner import collect_archive, scan_snapshot
+from app.scanner import FileRecord, collect_archive, decode_file, scan_snapshot
 
 
 RULEBOOK = Rulebook()
@@ -83,8 +83,10 @@ def test_large_file_is_truncated_not_skipped():
     assert large["truncated"] is True
     assert large["scanned_bytes"] == RULEBOOK.policy["max_file_bytes"]
     assert any(item.rule_id == "S001" for item in report.findings)
-    assert report.status == "partial"
+    assert report.status == "complete"
+    assert report.score_kind == "full"
     assert report.coverage["truncated_files"] == 1
+    assert any("仅扫描前" in item for item in report.limitations)
 
 
 def test_file_budget_keeps_first_sorted_paths():
@@ -126,6 +128,48 @@ def test_windows_only_entry_and_docs():
     assert any(item.rule_id == "W003" and item.applied_deduction == 0 for item in report.findings)
 
 
+def test_windows_scripts_are_summarized_once():
+    files = {
+        "README.md": "Getting Started\nrun start.bat\n",
+        "requirements.txt": "fastapi\n",
+        "start.bat": "@echo off\n",
+    }
+    for index in range(9):
+        files["tool%d.bat" % index] = "@echo off\n"
+    report = scan(files)
+    assert sum(item.rule_id == "W003" for item in report.findings) == 1
+    summary = next(item for item in report.findings if item.rule_id == "W003")
+    assert summary.applied_deduction == 0
+    assert "tool0.bat" in summary.evidence
+
+
+def test_only_leading_utf8_bom_is_removed():
+    content = "\ufeffhello\nbody\ufefftail"
+    record = FileRecord(path="bom.txt", size=len(content.encode("utf-8")), prefix=content.encode("utf-8"))
+    decode_file(record, RULEBOOK)
+    assert record.text == "hello\nbody\ufefftail"
+
+    interior = FileRecord(path="interior.txt", size=5, prefix="a\ufeffb".encode("utf-8"))
+    decode_file(interior, RULEBOOK)
+    assert interior.text == "a\ufeffb"
+
+
+def test_hardcoded_path_variants_are_detected():
+    report = scan(
+        {
+            "README.md": "Getting Started\nnpm start\n",
+            "requirements.txt": "fastapi\n",
+            "main.py": "print('ok')\n",
+            "config.txt": "E:\\data\n/home/alice/x\n\\\\nas\\share\\f.txt\n",
+        }
+    )
+    path_findings = [item for item in report.findings if item.rule_id == "P001"]
+    assert len(path_findings) == 3
+    assert any("E:\\data" in item.evidence for item in path_findings)
+    assert any("/home/alice/x" in item.evidence for item in path_findings)
+    assert any("\\\\nas\\share\\f.txt" in item.evidence for item in path_findings)
+
+
 def test_nested_dependency_manifest_counts_but_ignored_directory_does_not():
     nested = scan(
         {
@@ -144,3 +188,56 @@ def test_nested_dependency_manifest_counts_but_ignored_directory_does_not():
     )
     assert ignored.checks["dependencies"]["state"] == "absent"
     assert any(item.rule_id == "R002" for item in ignored.findings)
+
+
+def test_test_fixtures_are_excluded_from_content_scan():
+    report = scan(
+        {
+            "README.md": "# demo\n\nSet TOKEN=sk-READMEKEY0123456789abcdefghijk before running.\n",
+            "requirements.txt": "fastapi\n",
+            "main.py": "print('ok')\n",
+            "tests/test_scanner.py": (
+                "one=sk-abcdefghijklmnopqrstuvwxyz123456\n"
+                "aws=AKIAABCDEFGHIJKLMNOP\n"
+                "auth=Bearer abcdefghijklmnopqrstuvwxyz123456\n"
+                "-----BEGIN RSA PRIVATE KEY-----\n"
+                'path="C:/Users/alice/dev/app.py"\n'
+            ),
+            "web/app.test.js": "const k='sk-zzzzzzzzzzzzzzzzzzzzzz999999'\n",
+        }
+    )
+    paths = {item.location.path for item in report.findings if item.location}
+    assert "tests/test_scanner.py" not in paths
+    assert "web/app.test.js" not in paths
+    readme_secret = [item for item in report.findings if item.rule_id == "S001" and item.location.path == "README.md"]
+    assert len(readme_secret) == 1
+    assert readme_secret[0].applied_deduction == 15
+    assert any("已跳过 2 个测试样本文件" in item for item in report.limitations)
+    assert report.coverage["content_skipped_files"] == 2
+
+
+def test_documentation_secrets_are_still_reported():
+    report = scan(
+        {
+            "README.md": "Getting Started\nnpm start\n",
+            "requirements.txt": "fastapi\n",
+            "main.py": "print('ok')\n",
+            "docs/guide.md": "token=sk-DOCKEY0123456789abcdefghijklmn\n",
+        }
+    )
+    docs = [item for item in report.findings if item.rule_id == "S001" and item.location.path == "docs/guide.md"]
+    assert len(docs) == 1
+    assert docs[0].applied_deduction == 15
+    assert report.limitations[0] != "已跳过"
+
+
+def test_test_fixtures_do_not_satisfy_readiness_checks():
+    report = scan(
+        {
+            "README.md": "Getting Started\nnpm start\n",
+            "tests/fixtures/requirements.txt": "fastapi\n",
+            "main.py": "print('ok')\n",
+        }
+    )
+    assert report.checks["readme"]["evidence_paths"] == ["README.md"]
+    assert "tests/fixtures/requirements.txt" not in report.checks["dependencies"]["evidence_paths"]

@@ -145,7 +145,9 @@ def decode_file(record, rulebook):
         return
     try:
         decoder = codecs.getincrementaldecoder(encoding)(errors="strict")
-        text = decoder.decode(record.prefix, final=not record.truncated).lstrip("\ufeff")
+        text = decoder.decode(record.prefix, final=not record.truncated)
+        if text.startswith("\ufeff"):
+            text = text[1:]
     except UnicodeDecodeError:
         record.skip_reason = "binary" if b"\x00" in record.prefix else "unsupported_encoding"
         record.truncated = False
@@ -161,25 +163,46 @@ def decode_file(record, rulebook):
     record.prefix = b""
 
 
+def content_scan_targets(snapshot, rulebook, rule=None):
+    """Files eligible for a content scan, split into scanned and excluded."""
+    rule_globs = (rule or {}).get("exclude_paths", [])
+    global_globs = rulebook.policy.get("content_exclude_globs", [])
+    targets = []
+    excluded = []
+    for record in snapshot.files:
+        if record.text is None:
+            continue
+        if rulebook.matches(record.path, rule_globs) or rulebook.matches(record.path, global_globs):
+            excluded.append(record.path)
+        else:
+            targets.append(record)
+    return targets, excluded
+
+
 def evaluate_checks(snapshot, rulebook):
     records = {record.path: record for record in snapshot.files}
     budget_excluded = len(snapshot.paths) > len(snapshot.files)
+    scannable = {record.path for record in content_scan_targets(snapshot, rulebook)[0]}
     checks = {}
     for name, definition in rulebook.checks.items():
         inventory = [
             path for path, record in records.items()
-            if record.skip_reason != "ignored" and rulebook.matches(path, definition.get("paths", []))
+            if record.skip_reason != "ignored"
+            and path in scannable
+            and rulebook.matches(path, definition.get("paths", []))
         ]
         evidence = list(inventory)
         unknown = False
         for index, selector in enumerate(definition.get("content", [])):
             candidates = [
                 path for path, record in records.items()
-                if record.skip_reason != "ignored" and rulebook.matches(path, selector["paths"])
+                if record.skip_reason != "ignored"
+                and path in scannable
+                and rulebook.matches(path, selector["paths"])
             ]
             for path in candidates:
                 record = records.get(path)
-                if record is None or record.text is None:
+                if record is None or record.text is None or path not in scannable:
                     unknown = True
                     continue
                 if rulebook.patterns[(name, index)].search(record.text):
@@ -241,13 +264,24 @@ def scan_snapshot(snapshot, rulebook, repository, commit_sha, scan_id):
                 )
                 append(make_finding(rule, rulebook, repository, commit_sha, path=evidence_paths[0] if evidence_paths else None, evidence=evidence))
         elif rule["kind"] == "path":
-            for path in (record.path for record in snapshot.files if record.skip_reason is None):
-                if rulebook.matches(path, rule["paths"]) and not rulebook.matches(path, rule.get("exclude_paths", [])):
+            matched_paths = [
+                record.path for record in snapshot.files
+                if record.skip_reason is None
+                and rulebook.matches(record.path, rule["paths"])
+                and not rulebook.matches(record.path, rule.get("exclude_paths", []))
+            ]
+            if rule.get("report_mode") == "summary":
+                if matched_paths:
+                    append(make_finding(
+                        rule, rulebook, repository, commit_sha, path=matched_paths[0],
+                        evidence="仓库文件清单：" + ", ".join(matched_paths),
+                    ))
+            else:
+                for path in matched_paths:
                     append(make_finding(rule, rulebook, repository, commit_sha, path=path, evidence="仓库文件清单：" + path))
         else:
-            for record in snapshot.files:
-                if record.text is None:
-                    continue
+            targets, _ = content_scan_targets(snapshot, rulebook, rule)
+            for record in targets:
                 for match in rulebook.patterns[rule["id"]].finditer(record.text):
                     if rule.get("redact") and rulebook.placeholder.search(match.group()):
                         continue
@@ -269,6 +303,11 @@ def scan_snapshot(snapshot, rulebook, repository, commit_sha, scan_id):
     truncated = [record for record in snapshot.files if record.truncated]
     unsupported = [record for record in snapshot.files if record.skip_reason == "unsupported_encoding"]
     limitations = []
+    skipped = sorted({path for rule in ordered_rules if rule["kind"] == "content"
+                      for path in content_scan_targets(snapshot, rulebook, rule)[1]})
+    if skipped:
+        limitations.append("已跳过 %s 个测试样本文件，其内容未参与密钥与路径检测（如 %s）。"
+                           % (len(skipped), ", ".join(skipped[:3]) + (" 等" if len(skipped) > 3 else "")))
     if excluded:
         limitations.append("超过文件预算：按相对路径排序仅保留前 %s 个文件，%s 个文件未进入内容扫描。" % (rulebook.policy["max_files"], excluded))
     if truncated:
@@ -276,11 +315,12 @@ def scan_snapshot(snapshot, rulebook, repository, commit_sha, scan_id):
     if unsupported:
         limitations.append("%s 个文件编码不支持，未扫描其内容。" % len(unsupported))
     limitations.append("仅检查当前 commit，不检查 Git 历史、不验证凭证有效性、不执行仓库内容。")
-    partial = bool(excluded or truncated or unsupported)
+    partial = bool(excluded)
     coverage = {
         "total_files": len(snapshot.paths),
         "selected_files": len(snapshot.files),
         "scanned_files": sum(record.text is not None for record in snapshot.files),
+        "content_skipped_files": len(skipped),
         "excluded_by_file_budget": excluded,
         "binary_files": sum(record.skip_reason == "binary" for record in snapshot.files),
         "ignored_files": sum(record.skip_reason == "ignored" for record in snapshot.files),

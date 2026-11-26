@@ -47,6 +47,17 @@ policy:
     - '.venv/*'
     - 'dist/*'
   encodings: [utf-8, utf-16]
+  content_exclude_globs:
+    - 'tests/*'
+    - 'test/*'
+    - '*/tests/*'
+    - '*/test/*'
+    - '*/__tests__/*'
+    - '*/fixtures/*'
+    - '*/mocks/*'
+    - '*/testdata/*'
+    - 'test_*.py'
+    - '*_test.py'
   binary_control_ratio: 0.10
   placeholder_pattern: '(?i)(example|placeholder|your[_-]?(api[_-]?)?(key|token)|replace[_-]?me|dummy|changeme|xxxx|test[_-]?(key|token))'
 dimensions:
@@ -200,6 +211,8 @@ rules:
     severity: info
     confidence: high
     priority: 70
+    count_mode: once_per_rule
+    report_mode: summary
     deduction: 0
     max_deduction: 0
     message: 文件清单中存在 Windows 脚本；存在本身不扣分，也不代表恶意。
@@ -207,7 +220,7 @@ rules:
   - id: P001
     title: 硬编码本机绝对路径
     kind: content
-    pattern: '(?i)(?<![A-Za-z0-9])(?:[CD]:[\\/](?:[^\s"''`<>|;,]+)?|/Users/[^\s"''`<>|;,]+)'
+    pattern: '(?i)(?<![A-Za-z0-9])(?:[A-Z]:[\\/](?:[^\s"''`<>|;,]+)?|/(?:Users|home)/[^/\s"''`<>|;,]+(?:/[^\s"''`<>|;,]*)?|\\\\[A-Za-z0-9._-]+\\[A-Za-z0-9._$-]+(?:\\[^\s"''`<>|;,]*)?)'
     dimension: paths
     severity: medium
     confidence: medium
@@ -216,6 +229,7 @@ rules:
     max_deduction: 20
     message: 路径依赖具体机器或用户目录，示例路径也需人工确认。
     recommendation: 使用相对路径、配置项或平台路径 API。
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
   - id: S001
     title: 疑似 sk- 密钥
     kind: content
@@ -231,6 +245,7 @@ rules:
     max_deduction: 15
     message: 命中密钥形态，不验证密钥是否有效。
     recommendation: 撤销并轮换密钥，改用环境变量，检查 Git 历史。
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
   - id: S002
     title: 疑似 AKIA/AKID 访问密钥标识
     kind: content
@@ -246,6 +261,7 @@ rules:
     max_deduction: 10
     message: 命中访问密钥标识形态；标识本身不证明具有可用权限。
     recommendation: 确认用途并轮换相关凭证，移出仓库。
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
   - id: S003
     title: 疑似 Bearer token
     kind: content
@@ -261,6 +277,7 @@ rules:
     max_deduction: 10
     message: Bearer 后存在非明显占位的 token 形态。
     recommendation: 撤销 token，使用运行时注入，避免写入日志。
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
   - id: S004
     title: 私钥标记
     kind: content
@@ -276,6 +293,7 @@ rules:
     max_deduction: 20
     message: 检测到私钥块起始标记，内容不展示；不检查私钥有效性。
     recommendation: 立即确认并轮换私钥，检查泄露范围与历史记录。
+    exclude_paths: ['tests/**', 'test/**', '__tests__/**', 'spec/**', 'e2e/**', '**/test_*.py', '**/*_test.py', '**/tests/**', '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**', '**/testdata/**']
   - id: S005
     title: .env 配置文件入库
     kind: path
