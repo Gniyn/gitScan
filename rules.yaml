@@ -1,0 +1,292 @@
+version: '1.0.0'
+engine_version: '1.0.0'
+policy:
+  max_files: 2000
+  max_file_bytes: 262144
+  max_archive_bytes: 134217728
+  max_expanded_bytes: 1073741824
+  max_archive_members: 100000
+  scan_timeout_seconds: 240
+  max_findings: 20000
+  max_evidence_chars: 180
+  max_active_scans: 2
+  max_queued_scans: 6
+  cache_capacity: 24
+  cache_ttl_seconds: 1800
+  github_api_base: https://api.github.com
+  repository_hosts: [github.com, www.github.com]
+  download_hosts: [api.github.com, codeload.github.com]
+  github_requests_per_second: 2
+  github_retries: 2
+  max_rate_wait_seconds: 30
+  http_timeout_seconds: 25
+  binary_globs:
+    - '*.png'
+    - '*.jpg'
+    - '*.jpeg'
+    - '*.gif'
+    - '*.ico'
+    - '*.webp'
+    - '*.pdf'
+    - '*.zip'
+    - '*.gz'
+    - '*.7z'
+    - '*.exe'
+    - '*.dll'
+    - '*.so'
+    - '*.woff*'
+    - '*.ttf'
+    - '*.mp4'
+    - '*.mp3'
+    - '*.sqlite*'
+  ignore_globs:
+    - '.git/*'
+    - 'node_modules/*'
+    - '*/node_modules/*'
+    - 'vendor/*'
+    - '.venv/*'
+    - 'dist/*'
+  encodings: [utf-8, utf-16]
+  binary_control_ratio: 0.10
+  placeholder_pattern: '(?i)(example|placeholder|your[_-]?(api[_-]?)?(key|token)|replace[_-]?me|dummy|changeme|xxxx|test[_-]?(key|token))'
+dimensions:
+  readiness: {label: 接入完整性, maximum: 35}
+  windows: {label: Windows 依赖, maximum: 15}
+  paths: {label: 硬编码路径, maximum: 20}
+  secrets: {label: 密钥与敏感文件, maximum: 30}
+checks:
+  readme:
+    label: README
+    paths: [README, README.md, README.rst, README.txt, README.markdown]
+  dependencies:
+    label: 依赖清单
+    paths:
+      - pyproject.toml
+      - requirements*.txt
+      - Pipfile
+      - setup.py
+      - setup.cfg
+      - environment.yml
+      - package.json
+      - Cargo.toml
+      - go.mod
+      - pom.xml
+      - build.gradle
+      - '*.csproj'
+      - Gemfile
+      - composer.json
+      - '*/pyproject.toml'
+      - '*/requirements*.txt'
+      - '*/Pipfile'
+      - '*/package.json'
+      - '*/Cargo.toml'
+      - '*/go.mod'
+      - '*/pom.xml'
+      - '*/build.gradle'
+      - '*/*.csproj'
+      - '*/Gemfile'
+      - '*/composer.json'
+  startup:
+    label: 可识别启动入口
+    paths: [start.*, run.*, main.py, app.py, manage.py, __main__.py, '*/__main__.py', 'scripts/start.*', 'scripts/run.*', Dockerfile, Makefile, compose.yml, docker-compose.yml]
+    content:
+      - paths: [package.json]
+        pattern: '"scripts"\s*:\s*\{[^}]*"(?:start|dev|serve)"\s*:'
+  startup_docs:
+    label: README 启动说明
+    content:
+      - paths: [README, README.md, README.rst, README.txt, README.markdown]
+        pattern: '(?im)(?:\b(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:start|dev|serve)\b|\bpython[3]?\s+(?:-m\s+|[\w./-]+\.py)|\buvicorn\s+|\bdocker\s+compose\s+up|\bmake\s+(?:run|start)|\b(?:run|start)\.(?:sh|bat|cmd|ps1)|启动|运行方式|getting\s+started)'
+  windows_entry:
+    label: Windows 启动方式
+    paths: [start.bat, start.cmd, start.ps1, start.vbs, run.bat, run.cmd, run.ps1, run.vbs, 'scripts/start.bat', 'scripts/start.cmd', 'scripts/start.ps1', 'scripts/run.bat', 'scripts/run.cmd', 'scripts/run.ps1']
+    content:
+      - paths: [package.json, README, README.md, README.rst, README.txt, README.markdown]
+        pattern: '(?im)(?:\b(?:powershell|pwsh|cscript|wscript)(?:\.exe)?\s+|\b(?:run|start)\.(?:bat|cmd|ps1|vbs)\b|\bcmd(?:\.exe)?\s+/c\b)'
+  portable_entry:
+    label: 可识别跨平台启动方式
+    paths: [start.sh, run.sh, main.py, app.py, manage.py, __main__.py, '*/__main__.py', 'scripts/start.sh', 'scripts/run.sh', Dockerfile, Makefile, compose.yml, docker-compose.yml]
+    content:
+      - paths: [package.json]
+        pattern: '"(?:start|dev|serve)"\s*:\s*"(?!(?:[^"\n]*(?:powershell|pwsh|cmd\.exe|\.bat\b|\.cmd\b|\.ps1\b|\.vbs\b)))[^"\n]+"'
+  windows_docs:
+    label: Windows 文档命令
+    content:
+      - paths: [README, README.md, README.rst, README.txt, README.markdown]
+        pattern: '(?im)(?:\b(?:powershell|pwsh|cscript|wscript)(?:\.exe)?\s+|\b(?:run|start)\.(?:bat|cmd|ps1|vbs)\b|\bcmd(?:\.exe)?\s+/c\b)'
+  portable_docs:
+    label: 跨平台文档命令
+    content:
+      - paths: [README, README.md, README.rst, README.txt, README.markdown]
+        pattern: '(?im)(?:\b(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:start|dev|serve)\b|\bpython[3]?\s+(?:-m\s+|[\w./-]+\.py)|\buvicorn\s+|\bdocker\s+compose\s+up|\b(?:bash|sh)\s+|\b(?:run|start)\.sh\b|\bmake\s+(?:run|start))'
+rules:
+  - id: R001
+    title: 缺少 README
+    kind: condition
+    dimension: readiness
+    severity: medium
+    confidence: high
+    priority: 10
+    deduction: 10
+    max_deduction: 10
+    when: {readme: absent}
+    message: 完整文件清单中没有根目录 README。
+    recommendation: 添加项目用途、环境要求和接入步骤。
+  - id: R002
+    title: 缺少可识别依赖清单
+    kind: condition
+    dimension: readiness
+    severity: medium
+    confidence: medium
+    priority: 20
+    deduction: 10
+    max_deduction: 10
+    when: {dependencies: absent}
+    message: 未发现规则支持的依赖清单；无外部依赖的项目可人工确认。
+    recommendation: 提供依赖清单或明确说明无需安装依赖。
+  - id: R003
+    title: 缺少可识别启动入口
+    kind: condition
+    dimension: readiness
+    severity: medium
+    confidence: medium
+    priority: 30
+    deduction: 10
+    max_deduction: 10
+    when: {startup: absent}
+    message: 未发现规则支持的启动入口；纯库项目可能不需要独立入口。
+    recommendation: 增加可复现入口，或说明库的最小使用示例。
+  - id: R004
+    title: README 缺少可识别启动说明
+    kind: condition
+    dimension: readiness
+    severity: low
+    confidence: medium
+    priority: 40
+    deduction: 5
+    max_deduction: 5
+    when: {readme: present, startup_docs: absent}
+    message: 已扫描 README 未发现可识别启动说明。
+    recommendation: 写明安装、配置及最小启动命令。
+  - id: W001
+    title: 仅发现 Windows 启动方式
+    kind: condition
+    dimension: windows
+    severity: medium
+    confidence: medium
+    priority: 50
+    deduction: 10
+    max_deduction: 10
+    when: {windows_entry: present, portable_entry: absent}
+    message: 已发现 Windows 启动证据，未发现规则支持的跨平台替代方式。
+    recommendation: 提供 Python/Node 入口、Shell 脚本或容器启动方式。
+  - id: W002
+    title: 文档仅展示 Windows 操作命令
+    kind: condition
+    dimension: windows
+    severity: low
+    confidence: medium
+    priority: 60
+    deduction: 5
+    max_deduction: 5
+    when: {windows_docs: present, portable_docs: absent}
+    message: 已扫描 README 仅识别到 Windows 操作命令。
+    recommendation: 补充跨平台操作说明，并标注 Windows 专用步骤。
+  - id: W003
+    title: Windows 脚本
+    kind: path
+    paths: ['*.bat', '*.cmd', '*.ps1', '*.vbs']
+    dimension: windows
+    severity: info
+    confidence: high
+    priority: 70
+    deduction: 0
+    max_deduction: 0
+    message: 文件清单中存在 Windows 脚本；存在本身不扣分，也不代表恶意。
+    recommendation: 接入前人工审阅，不在体检服务中执行。
+  - id: P001
+    title: 硬编码本机绝对路径
+    kind: content
+    pattern: '(?i)(?<![A-Za-z0-9])(?:[CD]:[\\/](?:[^\s"''`<>|;,]+)?|/Users/[^\s"''`<>|;,]+)'
+    dimension: paths
+    severity: medium
+    confidence: medium
+    priority: 80
+    deduction: 3
+    max_deduction: 20
+    message: 路径依赖具体机器或用户目录，示例路径也需人工确认。
+    recommendation: 使用相对路径、配置项或平台路径 API。
+  - id: S001
+    title: 疑似 sk- 密钥
+    kind: content
+    pattern: '\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{20,}\b'
+    redact: true
+    overlap_group: secret
+    dimension: secrets
+    severity: high
+    confidence: medium
+    priority: 100
+    count_mode: once_per_rule
+    deduction: 15
+    max_deduction: 15
+    message: 命中密钥形态，不验证密钥是否有效。
+    recommendation: 撤销并轮换密钥，改用环境变量，检查 Git 历史。
+  - id: S002
+    title: 疑似 AKIA/AKID 访问密钥标识
+    kind: content
+    pattern: '\b(?:AKIA[A-Z0-9]{16}|AKID[A-Za-z0-9]{16,40})\b'
+    redact: true
+    overlap_group: secret
+    dimension: secrets
+    severity: high
+    confidence: medium
+    priority: 110
+    count_mode: once_per_rule
+    deduction: 10
+    max_deduction: 10
+    message: 命中访问密钥标识形态；标识本身不证明具有可用权限。
+    recommendation: 确认用途并轮换相关凭证，移出仓库。
+  - id: S003
+    title: 疑似 Bearer token
+    kind: content
+    pattern: '(?i)\bBearer[ \t]+[A-Za-z0-9][A-Za-z0-9._~+/=-]{19,}'
+    redact: true
+    overlap_group: secret
+    dimension: secrets
+    severity: high
+    confidence: medium
+    priority: 120
+    count_mode: once_per_rule
+    deduction: 10
+    max_deduction: 10
+    message: Bearer 后存在非明显占位的 token 形态。
+    recommendation: 撤销 token，使用运行时注入，避免写入日志。
+  - id: S004
+    title: 私钥标记
+    kind: content
+    pattern: '-----BEGIN (?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----'
+    redact: true
+    overlap_group: secret
+    dimension: secrets
+    severity: critical
+    confidence: high
+    priority: 90
+    count_mode: once_per_rule
+    deduction: 20
+    max_deduction: 20
+    message: 检测到私钥块起始标记，内容不展示；不检查私钥有效性。
+    recommendation: 立即确认并轮换私钥，检查泄露范围与历史记录。
+  - id: S005
+    title: .env 配置文件入库
+    kind: path
+    paths: [.env, '.env.*', '*/.env', '*/.env.*']
+    exclude_paths: ['*.example', '*.sample', '*.template', '*.dist']
+    dimension: secrets
+    severity: medium
+    confidence: high
+    priority: 130
+    count_mode: once_per_rule
+    deduction: 5
+    max_deduction: 5
+    message: 非模板 .env 文件存在于仓库；不代表其中一定有可用密钥。
+    recommendation: 移除运行时配置，加入忽略清单，仅提交脱敏模板。
