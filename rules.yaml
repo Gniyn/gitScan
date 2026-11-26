@@ -246,7 +246,7 @@ rules:
     deduction: 3
     max_deduction: 20
     # 说明文档与 AI 记录本来就靠"写出反例路径"来说明问题，扫它们只会制造噪声
-    message: 路径依赖具体机器或用户目录，示例路径也需人工确认。
+    message: 路径依赖具体机器或用户目录。出现在代码里通常需要改成相对路径或配置项；出现在文档里多数是示例，需人工判断。
     recommendation: 使用相对路径、配置项或平台路径 API。
     count_mode: per_file
     report_mode: file_summary
