@@ -13,6 +13,7 @@ class Job:
     progress: str = "等待扫描"
     report: object = None
     advice: object = None
+    advice_error: str = None
     error: str = None
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
@@ -24,6 +25,7 @@ class Job:
             "progress": self.progress,
             "report": self.report.model_dump(mode="json") if self.report else None,
             "advice": self.advice,
+            "advice_error": self.advice_error,
             "error": self.error,
         }
 
@@ -36,6 +38,8 @@ class JobManager:
         self.jobs = {}
         self.executor = ThreadPoolExecutor(max_workers=policy["max_active_scans"], thread_name_prefix="repo-scan")
         self.active = 0
+        self.advice_tasks = {}
+        self.advice_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="ai-advice")
 
     def _cleanup(self):
         cutoff = time.time() - self.policy["cache_ttl_seconds"]
@@ -89,16 +93,38 @@ class JobManager:
             with self.lock:
                 self.active = max(0, self.active - 1)
 
+    def advice_in_flight(self, job_id):
+        with self.lock:
+            return job_id in self.advice_tasks
+
+    def start_advice(self, job_id, report, generator):
+        """把 AI 建议放到线程池里跑，前端轮询结果；同步等待会被网关/浏览器中断。"""
+        with self.lock:
+            self.advice_tasks[job_id] = True
+
+        def work():
+            try:
+                advice = generator(report)
+                self.attach_advice(job_id, advice, None)
+            except Exception as error:  # AI 侧失败不能让任务永久卡在"生成中"
+                self.attach_advice(job_id, None, str(error)[:200])
+            finally:
+                with self.lock:
+                    self.advice_tasks.pop(job_id, None)
+
+        self.advice_executor.submit(work)
+
     def get(self, job_id):
         with self.lock:
             job = self.jobs.get(job_id)
             return job.public() if job else None
 
-    def attach_advice(self, job_id, advice):
+    def attach_advice(self, job_id, advice=None, error=None):
         with self.lock:
             job = self.jobs.get(job_id)
             if not job:
                 return False
             job.advice = advice
+            job.advice_error = error
             job.updated_at = time.time()
             return True

@@ -15,6 +15,16 @@ $env:GITHUB_TOKEN = "只读 token（可选）"
 
 打开 `http://127.0.0.1:8000`。未配置 `GITHUB_TOKEN` 时使用匿名 GitHub 配额。
 
+AI 建议是可选能力，缺省关闭；配置后页面"生成建议"按钮才可用：
+
+```powershell
+$env:AI_API_KEY  = "你的 key"
+$env:AI_BASE_URL = "https://api.deepseek.com/v1"   # 兼容 OpenAI /chat/completions 的服务均可
+$env:AI_MODEL    = "deepseek-chat"
+```
+
+AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责提交，前端轮询同一个任务拿结果，避免长连接被网关掐断。
+
 ## 设计约束
 
 - 使用 `GET /repos/{owner}/{repo}/tarball/{sha}` 流式下载，在内存中顺序解包，不落盘、不执行仓库内容。
@@ -59,6 +69,16 @@ $env:GITHUB_TOKEN = "只读 token（可选）"
 
 测试覆盖确定性、密钥去重与封顶、256 KiB 截取、2000 文件预算、二进制跳过、Windows 证据、路径变体（盘符、`/home/`、UNC）、BOM 处理、测试样本排除、URL 校验。
 
+前端不只靠肉眼：三个脚本都是可重复执行的检查。
+
+| 脚本 | 检查什么 | 为什么需要 |
+| --- | --- | --- |
+| `check_frontend.py` | 资源引用是否存在、JS 用到的 DOM id 是否都在页面里、`node --check` 语法、报告字段依赖 | 改模板最容易漏 id |
+| `check_js_scope.py` | `const` 声明后又被赋值的地方 | 浏览器只在执行到那一行才报 `Assignment to constant variable`，`node --check` 看不出来 |
+| `probe_frontend.py` | 用无头 Chrome 打开真实任务页，读状态条与 console | 只有真跑一遍才知道渲染有没有炸 |
+
+`probe_frontend.py` 里的 `run_chrome()` 也用来出 README 这张截图，所以截图和检查用的是同一条路径，不会出现"截图是手改的"这种情况。
+
 ## 更新跟踪
 
 原仓库更新后，工具如何给出新报告：
@@ -81,6 +101,12 @@ $env:GITHUB_TOKEN = "只读 token（可选）"
 - 匿名配额（60 次/小时）耗尽：报告标记 `stale`，继续展示上一份结果，并在页面明确标注"数据基于 commit X，更新检查失败，原因：配额耗尽"，而不是清空或伪造。
 - tarball 下载或解包失败：不覆盖旧报告，仅记录失败事件；连续失败达阈值才提示仓库不可达。
 - 结果是幂等的：同一 commit 重扫得到相同分数，所以重试不会产生抖动的报告。
+
+## 界面
+
+![扫描结果页](docs/screenshots/report.png)
+
+真实截图（`pallets/flask` @ `09493b5`，75 分）：左侧是接入评分与四项检查，右侧是各维度得分与扫描覆盖，下方风险清单可按"参与扣分 / Windows / 路径 / 密钥"筛选，底部是为该报告实时生成的 AI 接入建议。所有数字都来自这次扫描，没有手工修饰。
 
 ## 已知边界
 

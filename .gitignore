@@ -4,3 +4,7 @@ __pycache__/
 .env
 *.pyc
 run.sh
+
+# 本地排查脚本产物
+_probe_page.html
+_probe*.py

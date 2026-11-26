@@ -61,6 +61,35 @@
 
 - **修复**：扩展到 `[A-Z]:[\\/]`、`/home|Users/<user>/`、UNC `\\\\host\\share`，四个样本全部写进回归测试。
 
+### 摘录 5：AI 在建议里编造了扣分归因
+
+- **AI 的输出**：接入 AI 建议后，第一次生成的内容里写着"硬编码路径维度 0 分，涉及 `AI_USAGE.md`、`docs/ai-log.md`、`docs/samples/*.json`"。而当时真实数据是路径维度 17 分（只扣 3 分），真正命中的只有 `rules.yaml` 一处；`AI_USAGE.md` 根本没被任何规则命中。
+- **怎么发现的**：对照同一份报告的 `dimensions.paths.score` 和 `findings[].location.path` 逐条核对。AI 说的文件在 `findings` 里查不到，分数也与输入不符——它把"我认为这种仓库应该有路径问题"当成了输入里的事实。
+- **修复**：不是换模型，而是收窄输入和收紧约束。
+  1. 输入里去掉了 `evidence` 原文，只保留 `evidence_paths`（截断 10 条），让 AI 没有编造的空间；同时说明"某文件导致某条扣分"这个对应关系输入里本来就不存在。
+  2. system prompt 增加三条硬约束：不得编造输入中不存在的路径/分数/命中数量；不得断言某个文件导致了某条扣分；不得用自己的算术推断某维度扣了多少分，只能引用输入数值。
+- **修复后的表现**：重扫 `pallets/flask`，AI 的每条命中都带真实文件与处数（`docs/api.rst` 4 处等），并主动写出"输入未提供逐条扣分归因，以上仅为命中位置清单"。
+- **教训**：给模型的上下文越"干净"，它越不会拿想象填补空白；但约束必须写在 prompt 里，不能指望模型自觉。
+
+### 摘录 6：`const` 重赋值——三轮才定位到的那一行
+
+- **AI 的实现**：列表渲染函数里写了 `const meta = finding.location ? ... : "仓库级检查";`，紧接着又 `meta += ":" + finding.location.line_start;`。
+- **怎么发现的**：这条最费劲，值得记下来。
+  1. 页面一直显示红条"扫描状态获取失败 / Assignment to constant variable."，但 `node --check` 通过、`check_frontend.py` 全 PASS——因为它只在**执行到那一行**时才抛错。
+  2. 我第一轮改错了地方：以为是 `currentReport` 的赋值顺序，改完截图错误照旧（截图未变，说明我的改动根本没生效或不是根因）。
+  3. 第二轮让 Chrome 把 console 打出来（`--enable-logging=stderr --v=0`），拿到 `poll failed TypeError ... (353)`，但 353 行是 `catch` 那一行，不是出错行——`error.message` 骗人。
+  4. 第三轮做了最小复现页：单独注入脚本、只调 `render()`，把 `e.stack` 打出来，才拿到 `renderFindings ... :472:67`，正是 `meta +=` 那一行。
+- **修复**：`const` 改 `let`，并新增 `check_js_scope.py` 专扫"const 声明后又被赋值"，用注入一处坏代码反向验证它能报出来（报出 `line 199: const meta 被重新赋值`）。
+- **教训**：前端的"语法通过"和"运行正确"是两件事；错误堆栈要拿 `e.stack` 而不是 `e.message`；定位不到就做最小复现，别靠猜。
+
+### 摘录 7：AI 写的异步接口把协程对象直接返回了
+
+- **AI 的实现（我改的版本）**：把 AI 建议改成异步执行后，`main.py` 只接了一根线，把 `generate_advice(report)` 交给线程池；而 `generate_advice` 是 `async def`。
+- **报错**：`python TypeError: 'coroutine' object is not iterable` + `ValueError: [TypeError("'coroutine' object is not iterable")]`，`GET /api/scans/{id}` 直接 500。
+- **怎么发现的**：改完先跑端到端脚本（创建任务 → 提交建议 → 轮询），第一次轮询就 500，再翻 uvicorn 日志拿到上面两行。
+- **修复**：加一层同步入口 `def run_advice(report): return asyncio.run(generate_advice(report))`，线程池只拿同步函数。
+- **教训**：把异步函数从事件循环搬到线程池，必须显式桥接；`ThreadPoolExecutor.submit` 不认协程，也不会报错，只会在序列化时炸。
+
 ### 补充：AI 说"改好了"但没改对的地方
 
 修完 P001 之后我又扫了一次自己，结果 44 分、密钥维度 0 分——原因是 `tests/test_scanner.py` 里为了测试构造的假密钥被当成真实泄露。AI 的修复只动了规则，没有动检测范围。这提醒了一件事：**AI 的"已验证"要自己复核**，`17 passed` 不代表真实仓库上行为正确。最终改为测试样本目录不参与内容检测，并在 `limitations` 里显式说明跳过了几个文件。

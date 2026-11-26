@@ -172,6 +172,14 @@
     }
     .ai button:disabled { opacity: .55; cursor: wait; }
     .ai-note { color: #77708f; font-size: 11px; margin-top: 12px; }
+    .md { display: grid; gap: 6px; }
+    .md-h3 { font-size: 15px; font-weight: 700; margin-top: 10px; color: #1f2a44; }
+    .md-h4 { font-size: 14px; font-weight: 700; margin-top: 8px; color: #1f2a44; }
+    .md-h5, .md-h6 { font-size: 13px; font-weight: 600; margin-top: 6px; color: #1f2a44; }
+    .md-p { font-size: 13px; line-height: 1.7; word-break: break-word; }
+    .md-li { font-size: 13px; line-height: 1.7; padding-left: 16px; position: relative; word-break: break-word; }
+    .md-li::before { content: "·"; position: absolute; left: 4px; color: #8a83a6; }
+    .md code { background: #f3f1fb; border-radius: 4px; padding: 1px 4px; font-size: 12px; }
     .skeleton { color: var(--muted); font-size: 13px; }
     footer { padding: 0 0 36px; color: #929bad; font-size: 11px; text-align: center; }
     @media (max-width: 820px) {
@@ -260,7 +268,7 @@
         <div class="findings" id="findings"></div>
       </article>
 
-      <article class="card ai" id="aiCard">
+      <article class="card ai" id="aiCard" hidden>
         <div class="card-head">
           <div><h2>AI 接入建议</h2><div class="sub">只发送脱敏后的体检结果，不参与评分</div></div>
           <button id="adviceButton" type="button">生成建议</button>
@@ -333,11 +341,11 @@
     async function poll(jobId) {
       try {
         const job = await request("/api/scans/" + encodeURIComponent(jobId));
-        if (job.status === "complete") {
+        if (job.status === "complete" || job.status === "partial") {
           button.disabled = false;
           hideStatus();
-          render(job.report);
           currentReport = job.report;
+          render(job.report);
           if (job.advice) renderAdvice(job.advice);
           return;
         }
@@ -350,6 +358,7 @@
         setTimeout(() => poll(jobId), 900);
       } catch (error) {
         button.disabled = false;
+        console.error("poll failed", error);
         showStatus("扫描状态获取失败", error.message, true);
       }
     }
@@ -403,6 +412,7 @@
         ["入选预算", `${c.selected_files} / ${c.limits.max_files}`],
         ["二进制跳过", c.binary_files],
         ["忽略目录", c.ignored_files],
+        ["测试样本跳过", c.content_skipped_files ?? 0],
         ["截取文件", c.truncated_files],
         ["编码不支持", c.unsupported_encoding_files],
         ["实际扫描字节", formatBytes(c.scanned_bytes)]
@@ -420,12 +430,22 @@
 
       $("findingCount").textContent = `(${report.findings.length})`;
       renderFilters(report);
+      const deducted = report.findings.filter(f => f.applied_deduction > 0).length;
+      if (report.findings.length && !deducted) setFilter("all");
       renderFindings(report);
       const adviceBody = $("adviceBody");
       adviceBody.className = "skeleton";
       adviceBody.textContent = "扫描完成后可按需生成整改优先级和接入步骤。";
+      $("aiCard").hidden = !aiEnabled;
       $("adviceButton").disabled = !aiEnabled;
       $("adviceButton").textContent = aiEnabled ? "生成建议" : "未配置 AI";
+    }
+
+    function setFilter(key) {
+      currentFilter = key;
+      if (!currentReport) return;
+      renderFilters(currentReport);
+      renderFindings(currentReport);
     }
 
     function renderFilters(report) {
@@ -435,7 +455,7 @@
       definitions.forEach(([key, label]) => {
         const button = node("button", "filter" + (key === currentFilter ? " active" : ""), label);
         button.type = "button";
-        button.addEventListener("click", () => { currentFilter = key; renderFilters(report); renderFindings(report); });
+        button.addEventListener("click", () => setFilter(key));
         filters.append(button);
       });
     }
@@ -457,7 +477,7 @@
         const top = node("div", "finding-top");
         const copy = node("div");
         copy.append(node("h3", "", finding.title));
-        const meta = finding.location ? finding.location.path : "仓库级检查";
+        let meta = finding.location ? finding.location.path : "仓库级检查";
         if (finding.location && finding.location.line_start) meta += ":" + finding.location.line_start;
         copy.append(node("div", "finding-meta", `${finding.rule_id} · ${meta}`));
         const points = node("span", "points" + (finding.applied_deduction ? "" : " zero"),
@@ -487,8 +507,10 @@
       $("adviceBody").className = "skeleton";
       $("adviceBody").textContent = "正在分析脱敏体检结果…";
       try {
-        const advice = await request("/api/scans/" + encodeURIComponent(jobId) + "/advice", {method: "POST"});
-        renderAdvice(advice);
+        await request("/api/scans/" + encodeURIComponent(jobId) + "/advice", {method: "POST"});
+        $("adviceBody").textContent = "AI 正在生成整改建议，通常需要 10~30 秒…";
+        pollAdvice(jobId, Date.now() + 90000);
+        return;
       } catch (error) {
         $("adviceBody").className = "skeleton";
         $("adviceBody").textContent = "未能生成建议：" + error.message;
@@ -498,10 +520,68 @@
     });
 
     function renderAdvice(advice) {
+      $("aiCard").hidden = false;
       $("adviceBody").className = "ai";
-      $("adviceBody").replaceChildren(node("p", "", advice.content), node("div", "ai-note", advice.notice));
+      $("adviceBody").replaceChildren(renderMarkdownLite(advice.content), node("div", "ai-note", advice.notice));
       $("adviceButton").textContent = "已生成";
       $("adviceButton").disabled = true;
+    }
+
+    // AI 返回的是 Markdown，这里只处理标题、列表、粗体三种，够读就行
+    function renderMarkdownLite(text) {
+      const wrap = node("div", "md");
+      const inline = value => value
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/`([^`]+)`/g, "<code>$1</code>");
+      text.split(/\r?\n/).forEach(raw => {
+        const line = raw.trim();
+        if (!line) return;
+        const heading = line.match(/^(#{1,6})\s+(.*)$/);
+        if (heading) {
+          wrap.append(node("div", "md-h" + Math.min(heading[1].length + 2, 6), heading[2]));
+          return;
+        }
+        const bullet = line.match(/^[-*]\s+(.*)$/);
+        if (bullet) {
+          const item = node("div", "md-li");
+          item.innerHTML = inline(bullet[1]);
+          wrap.append(item);
+          return;
+        }
+        const para = node("div", "md-p");
+        para.innerHTML = inline(line);
+        wrap.append(para);
+      });
+      return wrap;
+    }
+
+    function pollAdvice(jobId, deadline) {
+      setTimeout(async () => {
+        try {
+          const job = await request("/api/scans/" + encodeURIComponent(jobId));
+          if (job.advice) {
+            renderAdvice(job.advice);
+            return;
+          }
+          if (job.advice_error) {
+            throw new Error(job.advice_error);
+          }
+        } catch (error) {
+          $("adviceBody").className = "skeleton";
+          $("adviceBody").textContent = "未能生成建议：" + error.message;
+          $("adviceButton").disabled = false;
+          $("adviceButton").textContent = "重试";
+          return;
+        }
+        if (Date.now() > deadline) {
+          $("adviceBody").className = "skeleton";
+          $("adviceBody").textContent = "建议生成超时，可稍后重试。";
+          $("adviceButton").disabled = false;
+          $("adviceButton").textContent = "重试";
+          return;
+        }
+        pollAdvice(jobId, deadline);
+      }, 1200);
     }
 
     function formatBytes(value) {
