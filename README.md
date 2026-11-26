@@ -77,7 +77,7 @@ AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责�
 | `check_js_scope.py` | `const` 声明后又被赋值的地方 | 浏览器只在执行到那一行才报 `Assignment to constant variable`，`node --check` 看不出来 |
 | `probe_frontend.py` | 用无头 Chrome 打开真实任务页，读状态条与 console | 只有真跑一遍才知道渲染有没有炸 |
 
-`probe_frontend.py` 里的 `run_chrome()` 也用来出 README 这张截图，所以截图和检查用的是同一条路径，不会出现"截图是手改的"这种情况。
+`probe_frontend.py` 里的 `run_chrome()` 和出 README 截图用的是同一套无头 Chrome 调用，截图不是手改的。
 
 ## 更新跟踪
 
@@ -102,7 +102,7 @@ AI 调用在线程池里异步执行：`POST /api/scans/{id}/advice` 只负责�
 - tarball 下载或解包失败：不覆盖旧报告，仅记录失败事件；连续失败达阈值才提示仓库不可达。
 - 结果是幂等的：同一 commit 重扫得到相同分数，所以重试不会产生抖动的报告。
 
-**目前已实现的部分（其余按设计保留，未实现）**
+**现在真正跑起来的部分（其余照设计留着，还没实现）**
 
 - 同仓库短时间重复提交：`refresh_ttl_seconds`（默认 300 秒）内的第二次及以后请求直接复用上一份结果，接口返回 `reused: true` 与 `cached_commit`。
 - 同一仓库正在扫描时并发提交：并入进行中的任务（`merged_into` 指向源任务），不重复消耗 GitHub 配额。
