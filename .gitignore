@@ -8,3 +8,4 @@ run.sh
 # 本地排查脚本产物
 _probe_page.html
 _probe*.py
+patch_*.py
